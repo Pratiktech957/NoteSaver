@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
-import API from "../services/api";
+import API from "../Services/api";
 
 // Animation variants
 const fadeInUp = {

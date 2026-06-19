@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import AdminSidebar from "../Components/AdminSidebar";
-import API from "../services/api";
+import API from "../Services/api";
 
 // Animation variants
 const fadeInUp = {
@@ -349,8 +349,8 @@ const AdminNotifications = () => {
                                     whileTap={{ scale: 0.95 }}
                                     onClick={() => setFilter(filterOption)}
                                     className={`px-4 py-2 rounded-xl text-sm font-medium transition-all capitalize ${filter === filterOption
-                                            ? "bg-gradient-to-r from-indigo-600 to-indigo-700 text-white shadow-md shadow-indigo-200"
-                                            : "bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-800"
+                                        ? "bg-gradient-to-r from-indigo-600 to-indigo-700 text-white shadow-md shadow-indigo-200"
+                                        : "bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-800"
                                         }`}
                                 >
                                     {filterOption === "all" ? "All" : filterOption}
@@ -420,8 +420,8 @@ const AdminNotifications = () => {
                                                 transition: { duration: 0.2 }
                                             }}
                                             className={`relative overflow-hidden bg-white rounded-2xl border ${notification.isRead
-                                                    ? "border-slate-200/80"
-                                                    : "border-indigo-200/80 shadow-[0_1px_8px_0_rgba(99,102,241,0.12)]"
+                                                ? "border-slate-200/80"
+                                                : "border-indigo-200/80 shadow-[0_1px_8px_0_rgba(99,102,241,0.12)]"
                                                 } shadow-[0_1px_4px_0_rgba(0,0,0,0.04)] p-6 hover:shadow-xl transition-all duration-300 ${!notification.isRead && "bg-gradient-to-r from-indigo-50/30 to-white"
                                                 }`}
                                         >
@@ -449,8 +449,8 @@ const AdminNotifications = () => {
                                                         <div className="flex-1 min-w-0">
                                                             <div className="flex flex-wrap items-center gap-2 mb-1.5">
                                                                 <h3 className={`font-semibold ${!notification.isRead
-                                                                        ? "text-indigo-700"
-                                                                        : "text-slate-900"
+                                                                    ? "text-indigo-700"
+                                                                    : "text-slate-900"
                                                                     }`}>
                                                                     {notification.title}
                                                                 </h3>

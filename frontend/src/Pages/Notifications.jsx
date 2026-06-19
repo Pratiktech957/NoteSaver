@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { io } from "socket.io-client";
 import UserSidebar from "../Components/UserSidebar";
-import API from "../services/api";
+import API from "../Services/api";
 
 // Animation variants
 const fadeInUp = {
@@ -774,8 +774,8 @@ const Notifications = () => {
                                                 transition: { duration: 0.2 }
                                             }}
                                             className={`relative overflow-hidden bg-white rounded-2xl border ${notification.isRead
-                                                    ? "border-slate-200/80"
-                                                    : "border-indigo-200/80 shadow-[0_1px_8px_0_rgba(99,102,241,0.12)]"
+                                                ? "border-slate-200/80"
+                                                : "border-indigo-200/80 shadow-[0_1px_8px_0_rgba(99,102,241,0.12)]"
                                                 } shadow-[0_1px_4px_0_rgba(0,0,0,0.04)] p-6 hover:shadow-xl transition-all duration-300 ${!notification.isRead && "bg-gradient-to-r from-indigo-50/30 to-white"
                                                 }`}
                                         >
@@ -803,8 +803,8 @@ const Notifications = () => {
                                                         <div className="flex-1 min-w-0">
                                                             <div className="flex flex-wrap items-center gap-2 mb-1.5">
                                                                 <h3 className={`font-semibold ${!notification.isRead
-                                                                        ? "text-indigo-700"
-                                                                        : "text-slate-900"
+                                                                    ? "text-indigo-700"
+                                                                    : "text-slate-900"
                                                                     }`}>
                                                                     {notification.title}
                                                                 </h3>

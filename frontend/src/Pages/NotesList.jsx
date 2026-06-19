@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo, useCallback } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import UserSidebar from "../Components/UserSidebar";
-import API from "../services/api";
+import API from "../Services/api";
 
 // Animation variants
 const fadeInUp = {
@@ -390,8 +390,8 @@ const NotesList = () => {
                             whileTap={{ scale: 0.95 }}
                             onClick={() => handlePageChange(page)}
                             className={`w-10 h-10 rounded-xl text-sm font-medium transition-colors ${currentPage === page
-                                    ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md'
-                                    : 'border border-slate-200 text-slate-600 hover:bg-slate-50'
+                                ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md'
+                                : 'border border-slate-200 text-slate-600 hover:bg-slate-50'
                                 }`}
                         >
                             {page}

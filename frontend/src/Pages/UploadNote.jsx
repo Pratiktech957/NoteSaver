@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import UserSidebar from "../Components/UserSidebar";
 import { motion, AnimatePresence } from "framer-motion";
-import API from "../services/api";
+import API from "../Services/api";
 
 // Animation variants
 const fadeInUp = {

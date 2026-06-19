@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import AdminSidebar from "../Components/AdminSidebar";
-import API from "../services/api";
+import API from "../Services/api";
 import {
     ResponsiveContainer,
     BarChart,
@@ -341,8 +341,8 @@ const Analytics = () => {
                                     whileTap={{ scale: 0.95 }}
                                     onClick={() => setActiveChart(chart)}
                                     className={`px-4 py-2 rounded-xl text-sm font-medium transition-all capitalize ${activeChart === chart
-                                            ? "bg-gradient-to-r from-indigo-600 to-indigo-700 text-white shadow-md shadow-indigo-200"
-                                            : "bg-white text-slate-600 hover:bg-slate-50 border border-slate-200"
+                                        ? "bg-gradient-to-r from-indigo-600 to-indigo-700 text-white shadow-md shadow-indigo-200"
+                                        : "bg-white text-slate-600 hover:bg-slate-50 border border-slate-200"
                                         }`}
                                 >
                                     {chart === "overview" && "📊 Overview"}

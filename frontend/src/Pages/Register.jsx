@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import API from "../services/api";
+import API from "../Services/api";
 
 // Animation variants
 const fadeInUp = {
@@ -465,8 +465,8 @@ const Register = () => {
                                     <div className="flex items-center justify-between mb-1">
                                         <span className="text-xs text-slate-500">Password Strength</span>
                                         <span className={`text-xs font-medium ${passwordStrength.label === "Strong" ? "text-emerald-600" :
-                                                passwordStrength.label === "Medium" ? "text-amber-600" :
-                                                    "text-red-500"
+                                            passwordStrength.label === "Medium" ? "text-amber-600" :
+                                                "text-red-500"
                                             }`}>
                                             {passwordStrength.label}
                                         </span>

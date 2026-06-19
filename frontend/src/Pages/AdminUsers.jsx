@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import AdminSidebar from "../Components/AdminSidebar";
-import API from "../services/api";
+import API from "../Services/api";
 
 // Animation variants
 const fadeInUp = {
@@ -492,8 +492,8 @@ const AdminUsers = () => {
                                                     <motion.div
                                                         whileHover={{ scale: 1.1 }}
                                                         className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0 ${user.role === "admin"
-                                                                ? "bg-gradient-to-br from-violet-500 to-purple-600"
-                                                                : "bg-gradient-to-br from-indigo-500 to-indigo-600"
+                                                            ? "bg-gradient-to-br from-violet-500 to-purple-600"
+                                                            : "bg-gradient-to-br from-indigo-500 to-indigo-600"
                                                             }`}
                                                     >
                                                         {user.name?.charAt(0)?.toUpperCase() || "U"}
@@ -514,8 +514,8 @@ const AdminUsers = () => {
                                                 </div>
                                                 <div className="flex flex-wrap gap-2 mt-3">
                                                     <span className={`inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-full ${user.role === "admin"
-                                                            ? "bg-violet-50 text-violet-700"
-                                                            : "bg-indigo-50 text-indigo-700"
+                                                        ? "bg-violet-50 text-violet-700"
+                                                        : "bg-indigo-50 text-indigo-700"
                                                         }`}>
                                                         {user.role === "admin" ? "👑" : "👤"} {user.role}
                                                     </span>
@@ -523,8 +523,8 @@ const AdminUsers = () => {
                                                         {...pulseStatus}
                                                         animate={user.isBlocked ? undefined : "animate"}
                                                         className={`inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-full ${user.isBlocked
-                                                                ? "bg-red-50 text-red-700"
-                                                                : "bg-emerald-50 text-emerald-700"
+                                                            ? "bg-red-50 text-red-700"
+                                                            : "bg-emerald-50 text-emerald-700"
                                                             }`}
                                                     >
                                                         {user.isBlocked ? "🔴 Blocked" : "🟢 Active"}
@@ -553,8 +553,8 @@ const AdminUsers = () => {
                                                     onClick={() => handleBlock(user._id)}
                                                     disabled={actionLoading === user._id}
                                                     className={`px-4 py-2 rounded-xl text-sm font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed ${user.isBlocked
-                                                            ? "bg-emerald-50 hover:bg-emerald-100 text-emerald-700 hover:text-emerald-800"
-                                                            : "bg-amber-50 hover:bg-amber-100 text-amber-700 hover:text-amber-800"
+                                                        ? "bg-emerald-50 hover:bg-emerald-100 text-emerald-700 hover:text-emerald-800"
+                                                        : "bg-amber-50 hover:bg-amber-100 text-amber-700 hover:text-amber-800"
                                                         }`}
                                                 >
                                                     {actionLoading === user._id ? (

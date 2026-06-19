@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { io } from "socket.io-client";
 import UserSidebar from "../Components/UserSidebar";
-import API from "../services/api";
+import API from "../Services/api";
 import toast, { Toaster } from "react-hot-toast";
 
 // Animation variants
