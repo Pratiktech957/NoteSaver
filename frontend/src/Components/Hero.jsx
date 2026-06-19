@@ -6,7 +6,7 @@ export default function Hero() {
                     Save Notes Faster Than Ever
                 </h1>
 
-                <p className="text-xl max-w-2xl mx-auto mb-8">
+                <p className="text-xl max-w-2xl mx-auto mb-58">
                     Organize ideas, store important information,
                     and access your notes anywhere with NoteSaver.
                 </p>
