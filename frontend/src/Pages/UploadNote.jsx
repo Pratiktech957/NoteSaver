@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import UserSidebar from "../Components/UserSidebar";
 import { motion, AnimatePresence } from "framer-motion";
+import API from "../services/api";
 
 // Animation variants
 const fadeInUp = {
@@ -33,7 +33,7 @@ const UploadNote = () => {
 
     const fetchCategories = async () => {
         try {
-            const res = await axios.get("http://localhost:5000/api/categories");
+            const res = await API.get("/categories");
             setCategories(res.data.categories || []);
         } catch (error) {
             console.error(error);
@@ -100,11 +100,8 @@ const UploadNote = () => {
             data.append("description", formData.description);
             data.append("file", formData.file);
 
-            const token = localStorage.getItem("token");
-
-            await axios.post("http://localhost:5000/api/notes", data, {
+            await API.post("/notes", data, {
                 headers: {
-                    Authorization: `Bearer ${token}`,
                     "Content-Type": "multipart/form-data"
                 }
             });

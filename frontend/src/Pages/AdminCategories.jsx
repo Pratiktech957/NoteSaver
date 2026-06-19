@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import AdminSidebar from "../Components/AdminSidebar";
+import API from "../services/api";
 
 // Animation variants
 const fadeInUp = {
@@ -91,7 +91,7 @@ const AdminCategories = () => {
 
     const fetchCategories = async () => {
         try {
-            const res = await axios.get("http://localhost:5000/api/categories");
+            const res = await API.get("/categories");
             setCategories(res.data.categories || []);
         } catch (error) {
             console.error(error);
@@ -120,28 +120,11 @@ const AdminCategories = () => {
 
         try {
             setSubmitting(true);
-            const token = localStorage.getItem("token");
 
             if (editingId) {
-                await axios.put(
-                    `http://localhost:5000/api/categories/${editingId}`,
-                    formData,
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`
-                        }
-                    }
-                );
+                await API.put(`/categories/${editingId}`, formData);
             } else {
-                await axios.post(
-                    "http://localhost:5000/api/categories",
-                    formData,
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`
-                        }
-                    }
-                );
+                await API.post("/categories", formData);
             }
 
             setFormData({
@@ -173,15 +156,7 @@ const AdminCategories = () => {
         if (!categoryToDelete) return;
 
         try {
-            const token = localStorage.getItem("token");
-            await axios.delete(
-                `http://localhost:5000/api/categories/${categoryToDelete._id}`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                }
-            );
+            await API.delete(`/categories/${categoryToDelete._id}`);
             setDeleteModalOpen(false);
             setCategoryToDelete(null);
             fetchCategories();

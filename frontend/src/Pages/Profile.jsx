@@ -5,11 +5,15 @@ import { useNavigate } from "react-router-dom";
 
 // Animation variants
 const fadeInUp = {
-    hidden: { opacity: 0, y: 16 },
+    hidden: { opacity: 0, y: 20 },
     visible: (i = 0) => ({
         opacity: 1,
         y: 0,
-        transition: { duration: 0.38, delay: i * 0.06, ease: [0.22, 1, 0.36, 1] }
+        transition: {
+            duration: 0.5,
+            delay: i * 0.06,
+            ease: [0.22, 1, 0.36, 1]
+        }
     })
 };
 
@@ -30,7 +34,7 @@ const Profile = () => {
     };
 
     return (
-        <div className="flex min-h-screen bg-[#F7F8FA]">
+        <div className="flex min-h-screen bg-gradient-to-br from-[#F7F8FA] to-[#EEF0F4]">
             <UserSidebar />
 
             <div className="flex-1 overflow-y-auto">
@@ -45,16 +49,31 @@ const Profile = () => {
                         className="mb-8"
                     >
                         <div className="flex items-center gap-2 mb-1">
-                            <span className="text-xs font-semibold uppercase tracking-widest text-indigo-500 bg-indigo-50 px-2.5 py-1 rounded-full">
+                            <motion.span
+                                initial={{ scale: 0.8, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                transition={{ delay: 0.2 }}
+                                className="text-xs font-semibold uppercase tracking-widest text-indigo-500 bg-indigo-50 px-2.5 py-1 rounded-full"
+                            >
                                 Profile
-                            </span>
+                            </motion.span>
                         </div>
-                        <h1 className="text-[2rem] font-bold tracking-tight text-slate-900 leading-tight">
+                        <motion.h1
+                            initial={{ x: -20, opacity: 0 }}
+                            animate={{ x: 0, opacity: 1 }}
+                            transition={{ delay: 0.3 }}
+                            className="text-[2rem] font-bold tracking-tight text-slate-900 leading-tight"
+                        >
                             Account Overview
-                        </h1>
-                        <p className="text-sm text-slate-500 mt-1.5 max-w-2xl">
+                        </motion.h1>
+                        <motion.p
+                            initial={{ x: -20, opacity: 0 }}
+                            animate={{ x: 0, opacity: 1 }}
+                            transition={{ delay: 0.4 }}
+                            className="text-sm text-slate-500 mt-1.5 max-w-2xl"
+                        >
                             View your personal information and account details.
-                        </p>
+                        </motion.p>
                     </motion.div>
 
                     {/* Profile Hero Card */}
@@ -63,17 +82,54 @@ const Profile = () => {
                         initial="hidden"
                         animate="visible"
                         custom={1}
-                        className="relative overflow-hidden bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-700 rounded-3xl shadow-xl mb-8"
+                        className="relative overflow-hidden bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-700 rounded-3xl shadow-2xl mb-8"
                     >
-                        {/* Decorative elements */}
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl" />
-                        <div className="absolute bottom-0 left-0 w-48 h-48 bg-purple-500/10 rounded-full translate-y-1/2 -translate-x-1/2 blur-2xl" />
-                        <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-white/5 rounded-full -translate-x-1/2 -translate-y-1/2 blur-3xl" />
+                        {/* Decorative animated elements */}
+                        <motion.div
+                            animate={{
+                                scale: [1, 1.2, 1],
+                                rotate: [0, 90, 0],
+                            }}
+                            transition={{
+                                duration: 20,
+                                repeat: Infinity,
+                                ease: "linear"
+                            }}
+                            className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl"
+                        />
+                        <motion.div
+                            animate={{
+                                scale: [1, 1.3, 1],
+                                rotate: [0, -90, 0],
+                            }}
+                            transition={{
+                                duration: 25,
+                                repeat: Infinity,
+                                ease: "linear",
+                                delay: 2
+                            }}
+                            className="absolute bottom-0 left-0 w-48 h-48 bg-purple-500/10 rounded-full translate-y-1/2 -translate-x-1/2 blur-2xl"
+                        />
+                        <motion.div
+                            animate={{
+                                scale: [1, 1.1, 1],
+                                opacity: [0.5, 0.8, 0.5],
+                            }}
+                            transition={{
+                                duration: 10,
+                                repeat: Infinity,
+                                ease: "easeInOut"
+                            }}
+                            className="absolute top-1/2 left-1/2 w-96 h-96 bg-white/5 rounded-full -translate-x-1/2 -translate-y-1/2 blur-3xl"
+                        />
 
                         <div className="relative px-8 py-8 flex flex-col md:flex-row items-center gap-8">
                             {/* Avatar */}
                             <div className="relative flex-shrink-0">
-                                <div className="w-32 h-32 rounded-full border-4 border-white/20 shadow-2xl overflow-hidden bg-white/10 backdrop-blur-sm">
+                                <motion.div
+                                    whileHover={{ scale: 1.05 }}
+                                    className="w-32 h-32 rounded-full border-4 border-white/20 shadow-2xl overflow-hidden bg-white/10 backdrop-blur-sm"
+                                >
                                     <img
                                         src={
                                             user?.profileImage ||
@@ -82,46 +138,83 @@ const Profile = () => {
                                         alt="Profile"
                                         className="w-full h-full object-cover"
                                     />
-                                </div>
-                                <div className={`absolute -bottom-1 -right-1 w-8 h-8 rounded-full border-2 border-white flex items-center justify-center text-white text-xs font-bold ${user?.isVerified ? "bg-emerald-500" : "bg-amber-500"
-                                    }`}>
+                                </motion.div>
+                                <motion.div
+                                    initial={{ scale: 0 }}
+                                    animate={{ scale: 1 }}
+                                    transition={{
+                                        delay: 0.5,
+                                        type: "spring",
+                                        stiffness: 300,
+                                        damping: 20
+                                    }}
+                                    className={`absolute -bottom-1 -right-1 w-8 h-8 rounded-full border-2 border-white flex items-center justify-center text-white text-xs font-bold shadow-lg ${user?.isVerified ? "bg-emerald-500" : "bg-amber-500"
+                                        }`}
+                                >
                                     {user?.isVerified ? "✓" : "!"}
-                                </div>
+                                </motion.div>
                             </div>
 
                             {/* Profile Info */}
                             <div className="text-center md:text-left flex-1">
-                                <h2 className="text-3xl font-bold text-white mb-1">
+                                <motion.h2
+                                    initial={{ x: -20, opacity: 0 }}
+                                    animate={{ x: 0, opacity: 1 }}
+                                    transition={{ delay: 0.4 }}
+                                    className="text-3xl font-bold text-white mb-1"
+                                >
                                     {user?.name}
-                                </h2>
-                                <p className="text-indigo-200 text-sm mb-3">
+                                </motion.h2>
+                                <motion.p
+                                    initial={{ x: -20, opacity: 0 }}
+                                    animate={{ x: 0, opacity: 1 }}
+                                    transition={{ delay: 0.5 }}
+                                    className="text-indigo-200 text-sm mb-3"
+                                >
                                     {user?.email}
-                                </p>
+                                </motion.p>
                                 <div className="flex flex-wrap gap-2 justify-center md:justify-start">
-                                    <span className="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-medium border border-white/10">
+                                    <motion.span
+                                        initial={{ scale: 0.8, opacity: 0 }}
+                                        animate={{ scale: 1, opacity: 1 }}
+                                        transition={{ delay: 0.6 }}
+                                        className="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-medium border border-white/10"
+                                    >
                                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
                                         {user?.role || "User"}
-                                    </span>
+                                    </motion.span>
                                     {user?.isVerified ? (
-                                        <span className="inline-flex items-center gap-1.5 bg-emerald-500/20 text-emerald-100 px-3 py-1 rounded-full text-xs font-medium border border-emerald-500/20">
+                                        <motion.span
+                                            initial={{ scale: 0.8, opacity: 0 }}
+                                            animate={{ scale: 1, opacity: 1 }}
+                                            transition={{ delay: 0.7 }}
+                                            className="inline-flex items-center gap-1.5 bg-emerald-500/20 text-emerald-100 px-3 py-1 rounded-full text-xs font-medium border border-emerald-500/20"
+                                        >
                                             ✅ Verified Account
-                                        </span>
+                                        </motion.span>
                                     ) : (
-                                        <span className="inline-flex items-center gap-1.5 bg-amber-500/20 text-amber-100 px-3 py-1 rounded-full text-xs font-medium border border-amber-500/20">
+                                        <motion.span
+                                            initial={{ scale: 0.8, opacity: 0 }}
+                                            animate={{ scale: 1, opacity: 1 }}
+                                            transition={{ delay: 0.7 }}
+                                            className="inline-flex items-center gap-1.5 bg-amber-500/20 text-amber-100 px-3 py-1 rounded-full text-xs font-medium border border-amber-500/20"
+                                        >
                                             ⏳ Unverified
-                                        </span>
+                                        </motion.span>
                                     )}
                                 </div>
                             </div>
 
                             {/* Quick Action */}
                             <div className="flex-shrink-0">
-                                <button
+                                <motion.button
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
                                     onClick={handleEditProfile}
-                                    className="px-5 py-2.5 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-white text-sm font-medium hover:bg-white/20 hover:scale-105 transition-all duration-300"
+                                    className="px-5 py-2.5 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-white text-sm font-medium hover:bg-white/20 transition-all duration-300 shadow-lg"
                                 >
                                     Edit Profile
-                                </button>
+                                </motion.button>
                             </div>
                         </div>
                     </motion.div>
@@ -134,46 +227,59 @@ const Profile = () => {
                         custom={2}
                         className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8"
                     >
-                        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-[0_1px_4px_0_rgba(0,0,0,0.06)] p-5">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Account Status</p>
-                                    <p className="text-2xl font-bold text-emerald-600 mt-1">Active</p>
+                        {[
+                            { label: "Account Status", value: "Active", icon: "🟢", color: "emerald" },
+                            {
+                                label: "Member Since",
+                                value: user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-US', {
+                                    month: 'short',
+                                    year: 'numeric'
+                                }) : "N/A",
+                                icon: "📅",
+                                color: "indigo"
+                            },
+                            { label: "Account Type", value: user?.role || "User", icon: "👤", color: "violet" }
+                        ].map((stat, index) => (
+                            <motion.div
+                                key={stat.label}
+                                variants={fadeInUp}
+                                custom={index + 3}
+                                whileHover={{
+                                    y: -6,
+                                    scale: 1.02,
+                                    transition: { duration: 0.2 }
+                                }}
+                                whileTap={{ scale: 0.98 }}
+                                className="bg-white rounded-2xl border border-slate-200/80 shadow-[0_1px_4px_0_rgba(0,0,0,0.06)] p-5 hover:shadow-xl transition-all duration-300 cursor-pointer"
+                            >
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                                            {stat.label}
+                                        </p>
+                                        <motion.p
+                                            initial={{ scale: 0.5, opacity: 0 }}
+                                            animate={{ scale: 1, opacity: 1 }}
+                                            transition={{
+                                                delay: index * 0.1 + 0.4,
+                                                type: "spring",
+                                                stiffness: 300
+                                            }}
+                                            className={`text-2xl font-bold mt-1 text-${stat.color}-600 capitalize`}
+                                        >
+                                            {stat.value}
+                                        </motion.p>
+                                    </div>
+                                    <motion.div
+                                        whileHover={{ rotate: 360, scale: 1.1 }}
+                                        transition={{ duration: 0.5 }}
+                                        className={`w-10 h-10 rounded-xl bg-${stat.color}-50 flex items-center justify-center`}
+                                    >
+                                        <span className="text-lg">{stat.icon}</span>
+                                    </motion.div>
                                 </div>
-                                <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center">
-                                    <span className="text-lg">🟢</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-[0_1px_4px_0_rgba(0,0,0,0.06)] p-5">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Member Since</p>
-                                    <p className="text-2xl font-bold text-indigo-600 mt-1">
-                                        {user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-US', {
-                                            month: 'short',
-                                            year: 'numeric'
-                                        }) : "N/A"}
-                                    </p>
-                                </div>
-                                <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center">
-                                    <span className="text-lg">📅</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-[0_1px_4px_0_rgba(0,0,0,0.06)] p-5">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Account Type</p>
-                                    <p className="text-2xl font-bold text-violet-600 mt-1 capitalize">{user?.role || "User"}</p>
-                                </div>
-                                <div className="w-10 h-10 rounded-xl bg-violet-50 flex items-center justify-center">
-                                    <span className="text-lg">👤</span>
-                                </div>
-                            </div>
-                        </div>
+                            </motion.div>
+                        ))}
                     </motion.div>
 
                     {/* Account Information */}
@@ -181,16 +287,20 @@ const Profile = () => {
                         variants={fadeInUp}
                         initial="hidden"
                         animate="visible"
-                        custom={3}
-                        className="bg-white rounded-2xl border border-slate-200/80 shadow-[0_1px_4px_0_rgba(0,0,0,0.06)] overflow-hidden"
+                        custom={6}
+                        className="bg-white rounded-2xl border border-slate-200/80 shadow-[0_1px_4px_0_rgba(0,0,0,0.06)] overflow-hidden hover:shadow-lg transition-all duration-300"
                     >
                         <div className="px-6 py-5 border-b border-slate-100 flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-xl bg-indigo-50 flex items-center justify-center">
+                            <motion.div
+                                whileHover={{ rotate: 180 }}
+                                transition={{ duration: 0.5 }}
+                                className="w-8 h-8 rounded-xl bg-indigo-50 flex items-center justify-center"
+                            >
                                 <svg className="w-4 h-4 text-indigo-600" viewBox="0 0 16 16" fill="none">
                                     <path d="M2 3.5h12M2 8h8M2 12.5h6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                                     <rect x="0.5" y="0.5" width="15" height="15" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
                                 </svg>
-                            </div>
+                            </motion.div>
                             <h2 className="text-sm font-semibold text-slate-800">
                                 Account Information
                             </h2>
@@ -198,34 +308,53 @@ const Profile = () => {
 
                         <div className="px-6 py-5">
                             <div className="grid md:grid-cols-2 gap-4">
-                                {profileFields.map((field) => (
-                                    <div key={field.label} className="space-y-1">
+                                {profileFields.map((field, index) => (
+                                    <motion.div
+                                        key={field.label}
+                                        className="space-y-1"
+                                        initial={{ opacity: 0, x: -10 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ delay: index * 0.1 + 0.5 }}
+                                    >
                                         <label className="block text-xs font-medium text-slate-500 uppercase tracking-wide">
                                             {field.label}
                                         </label>
-                                        <div className="px-4 py-2.5 bg-slate-50 rounded-xl border border-slate-200/60 text-sm text-slate-700 font-medium">
+                                        <div className="px-4 py-2.5 bg-slate-50 rounded-xl border border-slate-200/60 text-sm text-slate-700 font-medium hover:bg-slate-100 transition-colors">
                                             {field.value}
                                         </div>
-                                    </div>
+                                    </motion.div>
                                 ))}
                             </div>
 
-                            <div className="mt-4 space-y-1">
+                            <motion.div
+                                className="mt-4 space-y-1"
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.7 }}
+                            >
                                 <label className="block text-xs font-medium text-slate-500 uppercase tracking-wide">
                                     Bio
                                 </label>
-                                <div className="px-4 py-3 bg-slate-50 rounded-xl border border-slate-200/60 min-h-[80px] text-sm text-slate-600">
-                                    {user?.bio || "No bio added yet."}
+                                <div className="px-4 py-3 bg-slate-50 rounded-xl border border-slate-200/60 min-h-[80px] text-sm text-slate-600 hover:bg-slate-100 transition-colors">
+                                    {user?.bio || "No bio added yet. Tell others about yourself!"}
                                 </div>
-                            </div>
+                            </motion.div>
 
-                            <div className="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400">
-                                <span>Account ID: {user?._id?.slice(-8) || "N/A"}</span>
+                            <motion.div
+                                className="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ delay: 0.8 }}
+                            >
+                                <span className="flex items-center gap-1">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-indigo-400"></span>
+                                    Account ID: {user?._id?.slice(-8) || "N/A"}
+                                </span>
                                 <span className="flex items-center gap-1">
                                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
                                     Secure Account
                                 </span>
-                            </div>
+                            </motion.div>
                         </div>
                     </motion.div>
 
@@ -234,7 +363,7 @@ const Profile = () => {
                         variants={fadeInUp}
                         initial="hidden"
                         animate="visible"
-                        custom={4}
+                        custom={7}
                         className="mt-6 text-center"
                     >
                         <p className="text-xs text-slate-400">

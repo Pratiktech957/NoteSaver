@@ -1,17 +1,21 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { motion } from "framer-motion";
 import AdminSidebar from "../Components/AdminSidebar";
+import API from "../services/api";
 
 // Animation variants
 const fadeInUp = {
-    hidden: { opacity: 0, y: 16 },
+    hidden: { opacity: 0, y: 20 },
     visible: (i = 0) => ({
         opacity: 1,
         y: 0,
-        transition: { duration: 0.38, delay: i * 0.06, ease: [0.22, 1, 0.36, 1] }
+        transition: {
+            duration: 0.5,
+            delay: i * 0.08,
+            ease: [0.22, 1, 0.36, 1]
+        }
     })
 };
 
@@ -26,6 +30,23 @@ const containerVariants = {
     }
 };
 
+const scaleOnHover = {
+    hover: {
+        scale: 1.02,
+        y: -4,
+        transition: {
+            duration: 0.2,
+            ease: "easeOut"
+        }
+    },
+    tap: {
+        scale: 0.98,
+        transition: {
+            duration: 0.1
+        }
+    }
+};
+
 const AdminDashboard = () => {
     const { user, logout } = useAuth();
     const [stats, setStats] = useState({
@@ -36,19 +57,17 @@ const AdminDashboard = () => {
     });
     const [loading, setLoading] = useState(true);
     const [recentActivity, setRecentActivity] = useState([]);
+    const [systemStatus, setSystemStatus] = useState({
+        database: "Online",
+        storage: "72% Used",
+        api: "Operational",
+        uptime: "99.9%"
+    });
 
     useEffect(() => {
         const fetchStats = async () => {
             try {
-                const token = localStorage.getItem("token");
-                const res = await axios.get(
-                    "http://localhost:5000/api/admin/stats",
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`
-                        }
-                    }
-                );
+                const res = await API.get("/admin/stats");
                 setStats({
                     totalUsers: res.data.totalUsers || 0,
                     totalNotes: res.data.totalNotes || 0,
@@ -56,15 +75,27 @@ const AdminDashboard = () => {
                     activeUsers: res.data.activeUsers || 0
                 });
 
-                // Dummy recent activity data
-                setRecentActivity([
-                    { type: "User", action: "Joined", name: "John Doe", time: "2 min ago" },
-                    { type: "Note", action: "Uploaded", name: "Physics Notes", time: "15 min ago" },
-                    { type: "Report", action: "Submitted", name: "Inappropriate Content", time: "1 hour ago" },
-                    { type: "User", action: "Updated", name: "Jane Smith", time: "3 hours ago" }
-                ]);
+                // Fetch recent activity from API
+                try {
+                    const activityRes = await API.get("/admin/activity");
+                    setRecentActivity(activityRes.data.activities || [
+                        { type: "User", action: "Joined", name: "John Doe", time: "2 min ago" },
+                        { type: "Note", action: "Uploaded", name: "Physics Notes", time: "15 min ago" },
+                        { type: "Report", action: "Submitted", name: "Inappropriate Content", time: "1 hour ago" },
+                        { type: "User", action: "Updated", name: "Jane Smith", time: "3 hours ago" }
+                    ]);
+                } catch (error) {
+                    console.error("Failed to fetch activity:", error);
+                    // Fallback to dummy data
+                    setRecentActivity([
+                        { type: "User", action: "Joined", name: "John Doe", time: "2 min ago" },
+                        { type: "Note", action: "Uploaded", name: "Physics Notes", time: "15 min ago" },
+                        { type: "Report", action: "Submitted", name: "Inappropriate Content", time: "1 hour ago" },
+                        { type: "User", action: "Updated", name: "Jane Smith", time: "3 hours ago" }
+                    ]);
+                }
             } catch (error) {
-                console.error(error);
+                console.error("Failed to fetch stats:", error);
             } finally {
                 setLoading(false);
             }
@@ -72,41 +103,88 @@ const AdminDashboard = () => {
         fetchStats();
     }, []);
 
-    // Stats cards data
+    // Stats cards data with enhanced icons
     const statCards = [
-        { label: "Total Users", value: stats.totalUsers, icon: "👥", color: "indigo" },
-        { label: "Total Notes", value: stats.totalNotes, icon: "📚", color: "emerald" },
-        { label: "Reports", value: stats.totalReports, icon: "🚨", color: "red" },
-        { label: "Active Users", value: stats.activeUsers, icon: "🟢", color: "violet" }
+        {
+            label: "Total Users",
+            value: stats.totalUsers,
+            icon: "👥",
+            color: "indigo",
+            bgGradient: "from-indigo-50 to-indigo-100/50",
+            borderColor: "border-indigo-200/50"
+        },
+        {
+            label: "Total Notes",
+            value: stats.totalNotes,
+            icon: "📚",
+            color: "emerald",
+            bgGradient: "from-emerald-50 to-emerald-100/50",
+            borderColor: "border-emerald-200/50"
+        },
+        {
+            label: "Reports",
+            value: stats.totalReports,
+            icon: "🚨",
+            color: "red",
+            bgGradient: "from-red-50 to-red-100/50",
+            borderColor: "border-red-200/50"
+        },
+        {
+            label: "Active Users",
+            value: stats.activeUsers,
+            icon: "🟢",
+            color: "violet",
+            bgGradient: "from-violet-50 to-violet-100/50",
+            borderColor: "border-violet-200/50"
+        }
     ];
 
-    // Quick actions data
+    // Quick actions data with enhanced paths
     const quickActions = [
-        { label: "Manage Users", icon: "👥", path: "/admin/users", color: "indigo" },
-        { label: "Manage Notes", icon: "📚", path: "/admin/notes", color: "emerald" },
-        { label: "Review Reports", icon: "🚨", path: "/admin/reports", color: "red" },
-        { label: "Analytics", icon: "📊", path: "/admin/analytics", color: "violet" }
+        { label: "Manage Users", icon: "👥", path: "/admin/users", color: "indigo", description: "View & manage users" },
+        { label: "Manage Notes", icon: "📚", path: "/admin/notes", color: "emerald", description: "View & manage notes" },
+        { label: "Review Reports", icon: "🚨", path: "/admin/reports", color: "red", description: "Handle user reports" },
+        { label: "Analytics", icon: "📊", path: "/admin/analytics", color: "violet", description: "View platform insights" }
     ];
 
-    // Skeleton loader
+    // Skeleton loader with shimmer effect
     const LoadingSkeleton = () => (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {[...Array(4)].map((_, i) => (
-                <div key={i} className="bg-white rounded-2xl border border-slate-200/80 p-6 animate-pulse">
-                    <div className="flex items-center justify-between">
-                        <div className="flex-1">
-                            <div className="h-4 bg-slate-200 rounded w-20 mb-2"></div>
-                            <div className="h-8 bg-slate-200 rounded w-16"></div>
+                <motion.div
+                    key={i}
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: i * 0.1 }}
+                    className="bg-white rounded-2xl border border-slate-200/80 p-6 overflow-hidden"
+                >
+                    <div className="relative">
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-slate-100/50 to-transparent -translate-x-full animate-shimmer"></div>
+                        <div className="flex items-center justify-between">
+                            <div className="flex-1">
+                                <div className="h-4 bg-slate-200 rounded w-20 mb-2"></div>
+                                <div className="h-8 bg-slate-200 rounded w-16"></div>
+                            </div>
+                            <div className="w-12 h-12 bg-slate-200 rounded-xl"></div>
                         </div>
-                        <div className="w-12 h-12 bg-slate-200 rounded-xl"></div>
                     </div>
-                </div>
+                </motion.div>
             ))}
         </div>
     );
 
-    // Get color classes
+    // Get color classes with enhanced styling
     const getColorClass = (color) => {
+        const map = {
+            indigo: "bg-gradient-to-br from-indigo-500 to-indigo-600 text-white shadow-indigo-200",
+            emerald: "bg-gradient-to-br from-emerald-500 to-emerald-600 text-white shadow-emerald-200",
+            red: "bg-gradient-to-br from-red-500 to-red-600 text-white shadow-red-200",
+            violet: "bg-gradient-to-br from-violet-500 to-violet-600 text-white shadow-violet-200"
+        };
+        return map[color] || map.indigo;
+    };
+
+    const getIconBgClass = (color) => {
         const map = {
             indigo: "bg-indigo-50 text-indigo-600",
             emerald: "bg-emerald-50 text-emerald-600",
@@ -118,77 +196,162 @@ const AdminDashboard = () => {
 
     const getHoverColor = (color) => {
         const map = {
-            indigo: "hover:bg-indigo-50",
-            emerald: "hover:bg-emerald-50",
-            red: "hover:bg-red-50",
-            violet: "hover:bg-violet-50"
+            indigo: "hover:bg-indigo-50/50",
+            emerald: "hover:bg-emerald-50/50",
+            red: "hover:bg-red-50/50",
+            violet: "hover:bg-violet-50/50"
         };
         return map[color] || map.indigo;
     };
 
     const getGradient = (color) => {
         const map = {
-            indigo: "from-indigo-500 to-indigo-600",
-            emerald: "from-emerald-500 to-emerald-600",
-            red: "from-red-500 to-red-600",
-            violet: "from-violet-500 to-violet-600"
+            indigo: "from-indigo-500 to-purple-600",
+            emerald: "from-emerald-500 to-teal-600",
+            red: "from-red-500 to-rose-600",
+            violet: "from-violet-500 to-purple-600"
         };
         return map[color] || map.indigo;
     };
 
+    const getActivityIcon = (type) => {
+        const map = {
+            "User": "👤",
+            "Note": "📝",
+            "Report": "🚨",
+            "Update": "🔄"
+        };
+        return map[type] || "📌";
+    };
+
+    const getActivityColor = (type) => {
+        const map = {
+            "User": "border-emerald-500 bg-emerald-50",
+            "Note": "border-indigo-500 bg-indigo-50",
+            "Report": "border-red-500 bg-red-50",
+            "Update": "border-violet-500 bg-violet-50"
+        };
+        return map[type] || "border-slate-500 bg-slate-50";
+    };
+
     return (
-        <div className="flex min-h-screen bg-[#F7F8FA]">
+        <div className="flex min-h-screen bg-gradient-to-br from-[#F7F8FA] to-[#EEF0F4]">
             <AdminSidebar />
 
             <div className="flex-1 overflow-y-auto">
                 <div className="max-w-7xl mx-auto px-6 py-8">
 
-                    {/* Dashboard Summary */}
+                    {/* Dashboard Summary with Enhanced Animation */}
                     <motion.div
                         variants={fadeInUp}
                         initial="hidden"
                         animate="visible"
                         custom={0}
-                        className="relative overflow-hidden bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-700 rounded-3xl shadow-xl mb-8"
+                        className="relative overflow-hidden bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-700 rounded-3xl shadow-2xl mb-8"
                     >
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl" />
-                        <div className="absolute bottom-0 left-0 w-48 h-48 bg-purple-500/10 rounded-full translate-y-1/2 -translate-x-1/2 blur-2xl" />
-                        <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-white/5 rounded-full -translate-x-1/2 -translate-y-1/2 blur-3xl" />
+                        {/* Animated background particles */}
+                        <motion.div
+                            animate={{
+                                scale: [1, 1.2, 1],
+                                rotate: [0, 90, 0],
+                            }}
+                            transition={{
+                                duration: 20,
+                                repeat: Infinity,
+                                ease: "linear"
+                            }}
+                            className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl"
+                        />
+                        <motion.div
+                            animate={{
+                                scale: [1, 1.3, 1],
+                                rotate: [0, -90, 0],
+                            }}
+                            transition={{
+                                duration: 25,
+                                repeat: Infinity,
+                                ease: "linear",
+                                delay: 2
+                            }}
+                            className="absolute bottom-0 left-0 w-48 h-48 bg-purple-500/10 rounded-full translate-y-1/2 -translate-x-1/2 blur-2xl"
+                        />
+                        <motion.div
+                            animate={{
+                                scale: [1, 1.1, 1],
+                                opacity: [0.5, 0.8, 0.5],
+                            }}
+                            transition={{
+                                duration: 10,
+                                repeat: Infinity,
+                                ease: "easeInOut"
+                            }}
+                            className="absolute top-1/2 left-1/2 w-96 h-96 bg-white/5 rounded-full -translate-x-1/2 -translate-y-1/2 blur-3xl"
+                        />
 
                         <div className="relative px-8 py-8">
                             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                                 <div>
-                                    <span className="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-medium border border-white/10 mb-3">
-                                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                                    <motion.span
+                                        initial={{ scale: 0.8, opacity: 0 }}
+                                        animate={{ scale: 1, opacity: 1 }}
+                                        transition={{ delay: 0.3 }}
+                                        className="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-medium border border-white/10 mb-3"
+                                    >
+                                        <motion.span
+                                            animate={{ scale: [1, 1.2, 1] }}
+                                            transition={{ duration: 2, repeat: Infinity }}
+                                            className="w-1.5 h-1.5 rounded-full bg-emerald-400"
+                                        />
                                         Admin Panel
-                                    </span>
-                                    <h1 className="text-3xl font-bold text-white">
-                                        Welcome back, {user?.name}
-                                    </h1>
-                                    <p className="text-indigo-200 text-sm mt-1">
+                                    </motion.span>
+                                    <motion.h1
+                                        initial={{ x: -20, opacity: 0 }}
+                                        animate={{ x: 0, opacity: 1 }}
+                                        transition={{ delay: 0.4 }}
+                                        className="text-3xl font-bold text-white"
+                                    >
+                                        Welcome back, {user?.name || "Admin"}
+                                    </motion.h1>
+                                    <motion.p
+                                        initial={{ x: -20, opacity: 0 }}
+                                        animate={{ x: 0, opacity: 1 }}
+                                        transition={{ delay: 0.5 }}
+                                        className="text-indigo-200 text-sm mt-1"
+                                    >
                                         Here's what's happening with your platform today.
-                                    </p>
+                                    </motion.p>
                                 </div>
-                                <div className="flex items-center gap-3">
+                                <motion.div
+                                    initial={{ scale: 0.9, opacity: 0 }}
+                                    animate={{ scale: 1, opacity: 1 }}
+                                    transition={{ delay: 0.6 }}
+                                    className="flex items-center gap-3"
+                                >
                                     <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-xl border border-white/10">
                                         <span className="text-sm text-white/80">Status:</span>
-                                        <span className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-300">
+                                        <motion.span
+                                            animate={{ scale: [1, 1.1, 1] }}
+                                            transition={{ duration: 2, repeat: Infinity }}
+                                            className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-300"
+                                        >
                                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
                                             Online
-                                        </span>
+                                        </motion.span>
                                     </div>
-                                    <button
+                                    <motion.button
+                                        whileHover={{ scale: 1.05 }}
+                                        whileTap={{ scale: 0.95 }}
                                         onClick={logout}
                                         className="px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-white text-sm font-medium hover:bg-white/20 transition-all"
                                     >
                                         Logout
-                                    </button>
-                                </div>
+                                    </motion.button>
+                                </motion.div>
                             </div>
                         </div>
                     </motion.div>
 
-                    {/* Statistics Cards */}
+                    {/* Statistics Cards with Enhanced Animations */}
                     {loading ? (
                         <LoadingSkeleton />
                     ) : (
@@ -203,28 +366,51 @@ const AdminDashboard = () => {
                                     key={stat.label}
                                     variants={fadeInUp}
                                     custom={index + 1}
-                                    whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                                    className="bg-white rounded-2xl border border-slate-200/80 shadow-[0_1px_4px_0_rgba(0,0,0,0.06)] p-6 hover:shadow-lg transition-all duration-300"
+                                    whileHover={{
+                                        y: -8,
+                                        scale: 1.02,
+                                        transition: { duration: 0.2 }
+                                    }}
+                                    whileTap={{ scale: 0.98 }}
+                                    className={`bg-gradient-to-br ${stat.bgGradient} rounded-2xl border ${stat.borderColor} shadow-[0_1px_4px_0_rgba(0,0,0,0.06)] p-6 hover:shadow-xl transition-all duration-300 cursor-pointer`}
                                 >
-                                    <div className="flex items-center justify-between">
+                                    <motion.div
+                                        className="flex items-center justify-between"
+                                        initial={{ scale: 0.8, opacity: 0 }}
+                                        animate={{ scale: 1, opacity: 1 }}
+                                        transition={{ delay: index * 0.1 + 0.3 }}
+                                    >
                                         <div>
                                             <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                                                 {stat.label}
                                             </p>
-                                            <p className="text-3xl font-bold text-slate-900 mt-1">
+                                            <motion.p
+                                                initial={{ scale: 0.5, opacity: 0 }}
+                                                animate={{ scale: 1, opacity: 1 }}
+                                                transition={{
+                                                    delay: index * 0.1 + 0.4,
+                                                    type: "spring",
+                                                    stiffness: 300
+                                                }}
+                                                className="text-3xl font-bold text-slate-900 mt-1"
+                                            >
                                                 {stat.value}
-                                            </p>
+                                            </motion.p>
                                         </div>
-                                        <div className={`w-12 h-12 rounded-2xl ${getColorClass(stat.color)} flex items-center justify-center text-2xl`}>
+                                        <motion.div
+                                            whileHover={{ rotate: 360, scale: 1.1 }}
+                                            transition={{ duration: 0.5 }}
+                                            className={`w-12 h-12 rounded-2xl ${getIconBgClass(stat.color)} flex items-center justify-center text-2xl shadow-sm`}
+                                        >
                                             {stat.icon}
-                                        </div>
-                                    </div>
+                                        </motion.div>
+                                    </motion.div>
                                 </motion.div>
                             ))}
                         </motion.div>
                     )}
 
-                    {/* Quick Actions */}
+                    {/* Quick Actions with Enhanced Cards */}
                     <motion.div
                         variants={fadeInUp}
                         initial="hidden"
@@ -238,37 +424,56 @@ const AdminDashboard = () => {
                         </div>
 
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            {quickActions.map((action) => (
+                            {quickActions.map((action, index) => (
                                 <Link key={action.label} to={action.path}>
                                     <motion.div
-                                        whileHover={{ scale: 1.03, y: -2 }}
-                                        whileTap={{ scale: 0.98 }}
+                                        variants={scaleOnHover}
+                                        initial="initial"
+                                        whileHover="hover"
+                                        whileTap="tap"
+                                        custom={index}
                                         className={`relative overflow-hidden bg-white rounded-2xl border border-slate-200/80 shadow-[0_1px_4px_0_rgba(0,0,0,0.06)] p-6 hover:shadow-lg transition-all duration-300 cursor-pointer ${getHoverColor(action.color)}`}
                                     >
-                                        <div className="relative">
+                                        <motion.div
+                                            className="relative"
+                                            initial={{ x: -10, opacity: 0 }}
+                                            animate={{ x: 0, opacity: 1 }}
+                                            transition={{ delay: index * 0.05 + 0.5 }}
+                                        >
                                             <div className="flex items-center gap-4">
-                                                <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${getGradient(action.color)} flex items-center justify-center text-white text-xl shadow-md`}>
+                                                <motion.div
+                                                    whileHover={{ rotate: 360 }}
+                                                    transition={{ duration: 0.6 }}
+                                                    className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${getGradient(action.color)} flex items-center justify-center text-white text-xl shadow-md`}
+                                                >
                                                     {action.icon}
-                                                </div>
+                                                </motion.div>
                                                 <div className="flex-1">
                                                     <h3 className="font-semibold text-slate-900 text-sm">
                                                         {action.label}
                                                     </h3>
+                                                    <p className="text-xs text-slate-400 mt-0.5">
+                                                        {action.description}
+                                                    </p>
                                                 </div>
                                             </div>
-                                            <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <motion.div
+                                                className="absolute top-3 right-3"
+                                                initial={{ opacity: 0, x: -10 }}
+                                                whileHover={{ opacity: 1, x: 0 }}
+                                            >
                                                 <svg className="w-4 h-4 text-slate-400" viewBox="0 0 16 16" fill="none">
                                                     <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                                                 </svg>
-                                            </div>
-                                        </div>
+                                            </motion.div>
+                                        </motion.div>
                                     </motion.div>
                                 </Link>
                             ))}
                         </div>
                     </motion.div>
 
-                    {/* Admin Profile & Recent Activity */}
+                    {/* Admin Profile & Recent Activity with Enhanced Animations */}
                     <div className="grid lg:grid-cols-2 gap-6">
                         {/* Admin Profile */}
                         <motion.div
@@ -279,30 +484,47 @@ const AdminDashboard = () => {
                             className="bg-white rounded-2xl border border-slate-200/80 shadow-[0_1px_4px_0_rgba(0,0,0,0.06)] overflow-hidden"
                         >
                             <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-xl bg-indigo-50 flex items-center justify-center">
+                                <motion.div
+                                    whileHover={{ rotate: 180 }}
+                                    transition={{ duration: 0.5 }}
+                                    className="w-8 h-8 rounded-xl bg-indigo-50 flex items-center justify-center"
+                                >
                                     <svg className="w-4 h-4 text-indigo-600" viewBox="0 0 16 16" fill="none">
                                         <circle cx="8" cy="5" r="3" stroke="currentColor" strokeWidth="1.5" />
                                         <path d="M2 14c0-2.5 2.5-4 6-4s6 1.5 6 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                                     </svg>
-                                </div>
+                                </motion.div>
                                 <h2 className="text-sm font-semibold text-slate-800">Admin Profile</h2>
                             </div>
 
                             <div className="px-6 py-5">
                                 <div className="flex items-center gap-4 mb-4">
-                                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-xl font-bold">
+                                    <motion.div
+                                        whileHover={{ scale: 1.1 }}
+                                        className="w-16 h-16 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-xl font-bold shadow-lg"
+                                    >
                                         {user?.name?.charAt(0)?.toUpperCase() || "A"}
-                                    </div>
+                                    </motion.div>
                                     <div>
-                                        <h3 className="font-bold text-slate-900">{user?.name}</h3>
-                                        <p className="text-sm text-slate-500">{user?.email}</p>
+                                        <motion.h3
+                                            initial={{ x: -10, opacity: 0 }}
+                                            animate={{ x: 0, opacity: 1 }}
+                                            className="font-bold text-slate-900"
+                                        >
+                                            {user?.name || "Admin User"}
+                                        </motion.h3>
+                                        <p className="text-sm text-slate-500">{user?.email || "admin@example.com"}</p>
                                         <div className="flex items-center gap-2 mt-1">
                                             <span className="inline-flex items-center gap-1 text-xs font-medium text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full">
                                                 {user?.role || "Admin"}
                                             </span>
-                                            <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
+                                            <motion.span
+                                                animate={{ scale: [1, 1.1, 1] }}
+                                                transition={{ duration: 2, repeat: Infinity }}
+                                                className="inline-flex items-center gap-1 text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full"
+                                            >
                                                 ● Active
-                                            </span>
+                                            </motion.span>
                                         </div>
                                     </div>
                                 </div>
@@ -329,24 +551,41 @@ const AdminDashboard = () => {
                             className="bg-white rounded-2xl border border-slate-200/80 shadow-[0_1px_4px_0_rgba(0,0,0,0.06)] overflow-hidden"
                         >
                             <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-xl bg-violet-50 flex items-center justify-center">
+                                <motion.div
+                                    whileHover={{ rotate: 180 }}
+                                    transition={{ duration: 0.5 }}
+                                    className="w-8 h-8 rounded-xl bg-violet-50 flex items-center justify-center"
+                                >
                                     <svg className="w-4 h-4 text-violet-600" viewBox="0 0 16 16" fill="none">
                                         <circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.5" />
                                         <path d="M8 4v4l2 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                                     </svg>
-                                </div>
+                                </motion.div>
                                 <h2 className="text-sm font-semibold text-slate-800">Recent Activity</h2>
                             </div>
 
-                            <div className="px-6 py-5">
+                            <div className="px-6 py-5 max-h-72 overflow-y-auto">
                                 <div className="space-y-4">
                                     {recentActivity.map((activity, index) => (
-                                        <div key={index} className="flex items-start gap-4">
-                                            <div className={`w-2 h-2 rounded-full mt-2 ${index === 0 ? "bg-emerald-500" :
-                                                index === 1 ? "bg-indigo-500" :
-                                                    index === 2 ? "bg-red-500" :
-                                                        "bg-violet-500"
-                                                }`} />
+                                        <motion.div
+                                            key={index}
+                                            className="flex items-start gap-4"
+                                            initial={{ x: -20, opacity: 0 }}
+                                            animate={{ x: 0, opacity: 1 }}
+                                            transition={{ delay: index * 0.1 + 0.5 }}
+                                            whileHover={{
+                                                x: 5,
+                                                transition: { duration: 0.2 }
+                                            }}
+                                        >
+                                            <motion.div
+                                                whileHover={{ scale: 1.2 }}
+                                                className={`w-2 h-2 rounded-full mt-2 ${index === 0 ? "bg-emerald-500" :
+                                                    index === 1 ? "bg-indigo-500" :
+                                                        index === 2 ? "bg-red-500" :
+                                                            "bg-violet-500"
+                                                    }`}
+                                            />
                                             <div className="flex-1">
                                                 <p className="text-sm font-medium text-slate-800">
                                                     <span className="font-semibold">{activity.type}</span>
@@ -355,14 +594,14 @@ const AdminDashboard = () => {
                                                 </p>
                                                 <p className="text-xs text-slate-400 mt-0.5">{activity.time}</p>
                                             </div>
-                                        </div>
+                                        </motion.div>
                                     ))}
                                 </div>
                             </div>
                         </motion.div>
                     </div>
 
-                    {/* System Status */}
+                    {/* System Status with Enhanced Animation */}
                     <motion.div
                         variants={fadeInUp}
                         initial="hidden"
@@ -372,36 +611,47 @@ const AdminDashboard = () => {
                     >
                         <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
                             <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-xl bg-emerald-50 flex items-center justify-center">
+                                <motion.div
+                                    whileHover={{ rotate: 180 }}
+                                    transition={{ duration: 0.5 }}
+                                    className="w-8 h-8 rounded-xl bg-emerald-50 flex items-center justify-center"
+                                >
                                     <svg className="w-4 h-4 text-emerald-600" viewBox="0 0 16 16" fill="none">
                                         <path d="M8 1v3M8 11v3M1 8h3M12 8h3M2.5 2.5l2 2M11.5 11.5l2 2M2.5 13.5l2-2M11.5 4.5l2-2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                                     </svg>
-                                </div>
+                                </motion.div>
                                 <h2 className="text-sm font-semibold text-slate-800">System Status</h2>
                             </div>
-                            <span className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full">
+                            <motion.span
+                                animate={{ scale: [1, 1.05, 1] }}
+                                transition={{ duration: 2, repeat: Infinity }}
+                                className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full"
+                            >
                                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
                                 All Systems Operational
-                            </span>
+                            </motion.span>
                         </div>
 
                         <div className="px-6 py-4 grid grid-cols-2 md:grid-cols-4 gap-4">
-                            <div className="text-center">
-                                <p className="text-xs text-slate-400">Database</p>
-                                <p className="text-sm font-medium text-emerald-600">● Online</p>
-                            </div>
-                            <div className="text-center">
-                                <p className="text-xs text-slate-400">Storage</p>
-                                <p className="text-sm font-medium text-emerald-600">● 72% Used</p>
-                            </div>
-                            <div className="text-center">
-                                <p className="text-xs text-slate-400">API</p>
-                                <p className="text-sm font-medium text-emerald-600">● Operational</p>
-                            </div>
-                            <div className="text-center">
-                                <p className="text-xs text-slate-400">Uptime</p>
-                                <p className="text-sm font-medium text-emerald-600">● 99.9%</p>
-                            </div>
+                            {Object.entries(systemStatus).map(([key, value], index) => (
+                                <motion.div
+                                    key={key}
+                                    className="text-center"
+                                    initial={{ scale: 0.9, opacity: 0 }}
+                                    animate={{ scale: 1, opacity: 1 }}
+                                    transition={{ delay: index * 0.1 + 0.6 }}
+                                    whileHover={{ scale: 1.05 }}
+                                >
+                                    <p className="text-xs text-slate-400 capitalize">{key}</p>
+                                    <motion.p
+                                        className="text-sm font-medium text-emerald-600"
+                                        animate={{ scale: [1, 1.05, 1] }}
+                                        transition={{ duration: 3, repeat: Infinity, delay: index * 0.5 }}
+                                    >
+                                        {value}
+                                    </motion.p>
+                                </motion.div>
+                            ))}
                         </div>
                     </motion.div>
 
