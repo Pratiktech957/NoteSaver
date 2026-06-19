@@ -22,8 +22,8 @@ import Reports from "./Pages/Reports";
 import Analytics from "./Pages/Analytics";
 import Settings from "./Pages/Settings";
 
-import ProtectedRoute from "./components/ProtectedRoute";
-import AdminRoute from "./components/AdminRoute";
+import ProtectedRoute from "./Components/ProtectedRoute";
+import AdminRoute from "./Components/AdminRoute";
 import NoteViewer from "./Pages/NoteViewer";
 import AdminCategories from "./Pages/AdminCategories";
 import AdminNotifications from "./Pages/AdminNotifications";

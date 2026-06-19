@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo, useCallback } from "react";
 import axios from "axios";
 import { Link, useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import UserSidebar from "../components/UserSidebar";
+import UserSidebar from "../Components/UserSidebar";
 
 // Animation variants
 const fadeInUp = {

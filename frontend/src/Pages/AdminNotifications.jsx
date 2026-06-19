@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
-import AdminSidebar from "../components/AdminSidebar";
+import AdminSidebar from "../Components/AdminSidebar";
 
 // Animation variants
 const fadeInUp = {

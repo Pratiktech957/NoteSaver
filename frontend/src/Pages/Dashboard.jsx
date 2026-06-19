@@ -3,7 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
-import UserSidebar from "../components/UserSidebar";
+import UserSidebar from "../Components/UserSidebar";
 
 // Animation variants
 const fadeInUp = {

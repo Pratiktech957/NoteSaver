@@ -3,7 +3,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { io } from "socket.io-client";
-import UserSidebar from "../components/UserSidebar";
+import UserSidebar from "../Components/UserSidebar";
 import toast, { Toaster } from "react-hot-toast";
 
 // Animation variants

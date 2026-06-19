@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo, useCallback } from "react";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import { io } from "socket.io-client";
-import UserSidebar from "../components/UserSidebar";
+import UserSidebar from "../Components/UserSidebar";
 
 // Animation variants
 const fadeInUp = {
@@ -677,8 +677,8 @@ const Notifications = () => {
                                             custom={index}
                                             layout
                                             className={`bg-white rounded-2xl border ${notification.isRead
-                                                    ? "border-slate-200/80"
-                                                    : "border-indigo-200/80 shadow-[0_1px_8px_0_rgba(99,102,241,0.1)]"
+                                                ? "border-slate-200/80"
+                                                : "border-indigo-200/80 shadow-[0_1px_8px_0_rgba(99,102,241,0.1)]"
                                                 } shadow-[0_1px_4px_0_rgba(0,0,0,0.04)] p-6 hover:shadow-lg transition-all duration-300 ${!notification.isRead && "bg-gradient-to-r from-indigo-50/30 to-white"
                                                 }`}
                                         >

@@ -1,6 +1,6 @@
 import { useAuth } from "../context/AuthContext";
 import { motion } from "framer-motion";
-import UserSidebar from "../components/UserSidebar";
+import UserSidebar from "../Components/UserSidebar";
 import { useNavigate } from "react-router-dom";
 
 // Animation variants
