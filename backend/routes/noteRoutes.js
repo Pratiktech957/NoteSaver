@@ -7,6 +7,7 @@ const {
     getSingleNote,
     downloadNote,
     updateNote,
+    getRecentNotes,
     deleteNote
 } = require("../controllers/noteController");
 
@@ -56,6 +57,12 @@ router.put(
     "/:id",
     authMiddleware,
     updateNote
+);
+
+router.get(
+    "/recent",
+    authMiddleware,
+    getRecentNotes
 );
 
 // Delete Note

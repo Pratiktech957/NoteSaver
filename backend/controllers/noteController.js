@@ -649,6 +649,20 @@ const updateNote = async (req, res) => {
     }
 };
 
+const getRecentNotes = async (req, res) => {
+    const notes = await Note.find()
+        .sort({ createdAt: -1 })
+        .limit(5)
+        .populate("owner", "name")
+        .populate("category", "name")
+        .lean();
+
+    res.status(200).json({
+        success: true,
+        notes
+    });
+};
+
 const deleteNote = async (req, res) => {
     try {
         // Validate ObjectId
@@ -772,5 +786,6 @@ module.exports = {
     getSingleNote,
     downloadNote,
     updateNote,
+    getRecentNotes,
     deleteNote
 };
