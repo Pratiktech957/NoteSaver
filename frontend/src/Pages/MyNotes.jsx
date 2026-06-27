@@ -6,7 +6,7 @@ import UserSidebar from "../Components/UserSidebar";
 import API from "../Services/api";
 import toast, { Toaster } from "react-hot-toast";
 
-// Animation variants
+// Enhanced animation variants
 const fadeInUp = {
     hidden: { opacity: 0, y: 20 },
     visible: (i = 0) => ({
@@ -48,7 +48,43 @@ const cardHover = {
     }
 };
 
-// Edit Modal Component with enhanced animations
+// Mobile menu button component
+const MobileMenuButton = ({ showSidebar, setShowSidebar }) => (
+    <button
+        onClick={() => setShowSidebar(!showSidebar)}
+        className="lg:hidden fixed top-4 left-4 z-50 p-2.5 bg-white/80 backdrop-blur-xl rounded-xl shadow-lg border border-slate-200/50 hover:bg-white transition-all"
+        aria-label="Toggle sidebar"
+    >
+        <div className="w-5 h-4 flex flex-col justify-between">
+            <motion.span
+                className="block w-full h-0.5 bg-slate-700 rounded-full"
+                animate={{
+                    rotate: showSidebar ? 45 : 0,
+                    y: showSidebar ? 6 : 0
+                }}
+                transition={{ duration: 0.3 }}
+            />
+            <motion.span
+                className="block w-full h-0.5 bg-slate-700 rounded-full"
+                animate={{
+                    opacity: showSidebar ? 0 : 1,
+                    scale: showSidebar ? 0 : 1
+                }}
+                transition={{ duration: 0.3 }}
+            />
+            <motion.span
+                className="block w-full h-0.5 bg-slate-700 rounded-full"
+                animate={{
+                    rotate: showSidebar ? -45 : 0,
+                    y: showSidebar ? -6 : 0
+                }}
+                transition={{ duration: 0.3 }}
+            />
+        </div>
+    </button>
+);
+
+// Edit Modal Component - ENHANCED RESPONSIVE
 const EditModal = ({ isOpen, onClose, note, onUpdate }) => {
     const [title, setTitle] = useState("");
     const [subject, setSubject] = useState("");
@@ -132,7 +168,7 @@ const EditModal = ({ isOpen, onClose, note, onUpdate }) => {
                     duration: 0.3,
                     ease: [0.22, 1, 0.36, 1]
                 }}
-                className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl overflow-hidden"
+                className="relative w-full max-w-lg bg-white rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden mx-4"
                 onClick={(e) => e.stopPropagation()}
             >
                 <motion.div
@@ -141,48 +177,48 @@ const EditModal = ({ isOpen, onClose, note, onUpdate }) => {
                     animate={{ scaleX: 1 }}
                     transition={{ duration: 0.5 }}
                 />
-                <div className="px-6 py-5 border-b border-slate-100">
-                    <h2 className="text-xl font-bold text-slate-900">Edit Note</h2>
-                    <p className="text-sm text-slate-500 mt-0.5">Update your note information</p>
+                <div className="px-4 sm:px-6 py-4 sm:py-5 border-b border-slate-100">
+                    <h2 className="text-lg sm:text-xl font-bold text-slate-900">Edit Note</h2>
+                    <p className="text-xs sm:text-sm text-slate-500 mt-0.5">Update your note information</p>
                 </div>
 
-                <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4">
                     <div>
-                        <label className="block text-xs font-medium text-slate-500 uppercase tracking-wide mb-1.5">
+                        <label className="block text-[10px] sm:text-xs font-medium text-slate-500 uppercase tracking-wide mb-1.5">
                             Title *
                         </label>
                         <input
                             type="text"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
-                            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                            className="w-full px-3 sm:px-4 py-2 sm:py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                             placeholder="Enter note title"
                             required
                         />
                     </div>
 
                     <div>
-                        <label className="block text-xs font-medium text-slate-500 uppercase tracking-wide mb-1.5">
+                        <label className="block text-[10px] sm:text-xs font-medium text-slate-500 uppercase tracking-wide mb-1.5">
                             Subject *
                         </label>
                         <input
                             type="text"
                             value={subject}
                             onChange={(e) => setSubject(e.target.value)}
-                            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                            className="w-full px-3 sm:px-4 py-2 sm:py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                             placeholder="Enter subject"
                             required
                         />
                     </div>
 
                     <div>
-                        <label className="block text-xs font-medium text-slate-500 uppercase tracking-wide mb-1.5">
+                        <label className="block text-[10px] sm:text-xs font-medium text-slate-500 uppercase tracking-wide mb-1.5">
                             Category
                         </label>
                         <select
                             value={category}
                             onChange={(e) => setCategory(e.target.value)}
-                            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                            className="w-full px-3 sm:px-4 py-2 sm:py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                             disabled={loading}
                         >
                             <option value="">Select category</option>
@@ -195,19 +231,19 @@ const EditModal = ({ isOpen, onClose, note, onUpdate }) => {
                     </div>
 
                     <div>
-                        <label className="block text-xs font-medium text-slate-500 uppercase tracking-wide mb-1.5">
+                        <label className="block text-[10px] sm:text-xs font-medium text-slate-500 uppercase tracking-wide mb-1.5">
                             Description
                         </label>
                         <textarea
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
                             rows="3"
-                            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all resize-none"
+                            className="w-full px-3 sm:px-4 py-2 sm:py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all resize-none"
                             placeholder="Enter description (optional)"
                         />
                     </div>
 
-                    <div className="flex gap-3 pt-4">
+                    <div className="flex flex-col sm:flex-row gap-3 pt-4">
                         <motion.button
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
@@ -243,7 +279,7 @@ const EditModal = ({ isOpen, onClose, note, onUpdate }) => {
     );
 };
 
-// Delete Confirmation Modal with enhanced animations
+// Delete Confirmation Modal - ENHANCED RESPONSIVE
 const DeleteModal = ({ isOpen, onClose, onConfirm, noteTitle }) => {
     if (!isOpen) return null;
 
@@ -263,7 +299,7 @@ const DeleteModal = ({ isOpen, onClose, onConfirm, noteTitle }) => {
                     duration: 0.3,
                     ease: [0.22, 1, 0.36, 1]
                 }}
-                className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden"
+                className="relative w-full max-w-md bg-white rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden mx-4"
                 onClick={(e) => e.stopPropagation()}
             >
                 <motion.div
@@ -272,7 +308,7 @@ const DeleteModal = ({ isOpen, onClose, onConfirm, noteTitle }) => {
                     animate={{ scaleX: 1 }}
                     transition={{ duration: 0.5 }}
                 />
-                <div className="p-6">
+                <div className="p-4 sm:p-6">
                     <motion.div
                         initial={{ scale: 0, rotate: -180 }}
                         animate={{ scale: 1, rotate: 0 }}
@@ -282,19 +318,19 @@ const DeleteModal = ({ isOpen, onClose, onConfirm, noteTitle }) => {
                             damping: 20,
                             delay: 0.1
                         }}
-                        className="flex items-center justify-center w-16 h-16 rounded-2xl bg-red-50 mx-auto mb-4"
+                        className="flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-red-50 mx-auto mb-4"
                     >
-                        <svg className="w-8 h-8 text-red-600" viewBox="0 0 24 24" fill="none">
+                        <svg className="w-7 h-7 sm:w-8 sm:h-8 text-red-600" viewBox="0 0 24 24" fill="none">
                             <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" />
                             <path d="M12 8v4M12 16v1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                         </svg>
                     </motion.div>
-                    <h3 className="text-xl font-bold text-slate-900 text-center mb-2">Delete Note?</h3>
-                    <p className="text-sm text-slate-500 text-center">
+                    <h3 className="text-lg sm:text-xl font-bold text-slate-900 text-center mb-2">Delete Note?</h3>
+                    <p className="text-xs sm:text-sm text-slate-500 text-center">
                         Are you sure you want to delete "<span className="font-medium text-slate-700">{noteTitle}</span>"?
                         This action cannot be undone.
                     </p>
-                    <div className="flex gap-3 mt-6">
+                    <div className="flex flex-col sm:flex-row gap-3 mt-6">
                         <motion.button
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
@@ -330,8 +366,9 @@ const MyNotes = () => {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [noteToDelete, setNoteToDelete] = useState(null);
     const [error, setError] = useState(null);
+    const [showMobileSidebar, setShowMobileSidebar] = useState(false);
 
-    // Connect to Socket.IO with environment variable
+    // EXACT SAME Socket.IO connection - NO CHANGES
     useEffect(() => {
         const token = localStorage.getItem("token");
         if (!token) return;
@@ -355,7 +392,7 @@ const MyNotes = () => {
         };
     }, []);
 
-    // Socket event listeners
+    // EXACT SAME Socket event listeners - NO CHANGES
     useEffect(() => {
         if (!socket) return;
 
@@ -403,7 +440,7 @@ const MyNotes = () => {
         };
     }, [socket]);
 
-    // Fetch notes
+    // EXACT SAME fetch notes - NO CHANGES
     useEffect(() => {
         const fetchMyNotes = async () => {
             try {
@@ -421,7 +458,7 @@ const MyNotes = () => {
         fetchMyNotes();
     }, []);
 
-    // Handle download
+    // EXACT SAME handleDownload - NO CHANGES
     const handleDownload = useCallback(async (noteId) => {
         try {
             const response = await API.get(`/notes/${noteId}/download`);
@@ -439,7 +476,6 @@ const MyNotes = () => {
                 link.click();
                 document.body.removeChild(link);
 
-                // Update local state
                 setNotes(prev =>
                     prev.map(note =>
                         note._id === noteId
@@ -456,7 +492,7 @@ const MyNotes = () => {
         }
     }, []);
 
-    // Handle delete
+    // EXACT SAME handleDelete - NO CHANGES
     const handleDelete = useCallback(async () => {
         if (!noteToDelete) return;
 
@@ -475,7 +511,7 @@ const MyNotes = () => {
         }
     }, [noteToDelete]);
 
-    // Handle update
+    // EXACT SAME handleUpdate - NO CHANGES
     const handleUpdate = useCallback((updatedNote) => {
         setNotes(prev =>
             prev.map(note =>
@@ -484,7 +520,7 @@ const MyNotes = () => {
         );
     }, []);
 
-    // Filter and sort notes
+    // EXACT SAME filter and sort - NO CHANGES
     const filteredAndSortedNotes = useMemo(() => {
         let filtered = notes.filter((note) =>
             note.title?.toLowerCase().includes(search.toLowerCase()) ||
@@ -515,7 +551,7 @@ const MyNotes = () => {
         return filtered;
     }, [notes, search, sortBy]);
 
-    // Calculate statistics
+    // EXACT SAME stats calculation - NO CHANGES
     const stats = useMemo(() => {
         const total = notes.length;
         const totalViews = notes.reduce((sum, note) => sum + (note.views || 0), 0);
@@ -525,7 +561,7 @@ const MyNotes = () => {
         return { total, totalViews, totalDownloads, totalSize: sizeInMB.toFixed(2) };
     }, [notes]);
 
-    // Get file icon with color
+    // EXACT SAME getFileIcon - NO CHANGES
     const getFileIcon = (filename) => {
         const ext = filename?.split(".").pop()?.toLowerCase();
         const icons = {
@@ -542,23 +578,23 @@ const MyNotes = () => {
         return icons[ext] || icons.default;
     };
 
-    // Format file size
+    // EXACT SAME formatFileSize - NO CHANGES
     const formatFileSize = (bytes) => {
         if (!bytes) return "0 MB";
         const mb = bytes / (1024 * 1024);
         return mb < 1 ? `${(bytes / 1024).toFixed(0)} KB` : `${mb.toFixed(2)} MB`;
     };
 
-    // Loading skeleton with shimmer
+    // Enhanced Loading Skeleton
     const LoadingSkeleton = () => (
-        <div className="grid md:grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
             {[...Array(4)].map((_, i) => (
                 <motion.div
                     key={i}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.05 }}
-                    className="bg-white rounded-2xl border border-slate-200/80 p-5 overflow-hidden"
+                    className="bg-white/80 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-slate-200/80 p-4 sm:p-5 overflow-hidden"
                 >
                     <div className="relative">
                         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-slate-100/50 to-transparent -translate-x-full animate-shimmer"></div>
@@ -569,18 +605,18 @@ const MyNotes = () => {
                                 <div className="h-3 bg-slate-200 rounded w-1/2"></div>
                             </div>
                         </div>
-                        <div className="flex gap-4 mb-3">
+                        <div className="flex flex-wrap gap-3 sm:gap-4 mb-3">
                             <div className="h-4 bg-slate-200 rounded w-12"></div>
                             <div className="h-4 bg-slate-200 rounded w-12"></div>
                             <div className="h-4 bg-slate-200 rounded w-12"></div>
                         </div>
                         <div className="h-4 bg-slate-200 rounded w-full mb-1"></div>
                         <div className="h-4 bg-slate-200 rounded w-2/3"></div>
-                        <div className="flex gap-2 mt-4">
-                            <div className="h-9 bg-slate-200 rounded-xl w-20"></div>
-                            <div className="h-9 bg-slate-200 rounded-xl w-20"></div>
-                            <div className="h-9 bg-slate-200 rounded-xl w-20"></div>
-                            <div className="h-9 bg-slate-200 rounded-xl w-20 ml-auto"></div>
+                        <div className="flex flex-wrap gap-2 mt-4">
+                            <div className="h-9 bg-slate-200 rounded-xl w-16 sm:w-20"></div>
+                            <div className="h-9 bg-slate-200 rounded-xl w-16 sm:w-20"></div>
+                            <div className="h-9 bg-slate-200 rounded-xl w-16 sm:w-20"></div>
+                            <div className="h-9 bg-slate-200 rounded-xl w-16 sm:w-20 ml-auto"></div>
                         </div>
                     </div>
                 </motion.div>
@@ -588,7 +624,7 @@ const MyNotes = () => {
         </div>
     );
 
-    // Empty state
+    // Enhanced Empty State
     const EmptyState = () => (
         <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
@@ -598,7 +634,7 @@ const MyNotes = () => {
                 stiffness: 300,
                 damping: 25
             }}
-            className="bg-white rounded-2xl border border-slate-200/80 shadow-[0_1px_4px_0_rgba(0,0,0,0.06)] p-16 text-center"
+            className="bg-white/80 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-slate-200/80 shadow-[0_1px_4px_0_rgba(0,0,0,0.06)] p-8 sm:p-16 text-center"
         >
             <motion.div
                 animate={{
@@ -610,14 +646,14 @@ const MyNotes = () => {
                     repeat: Infinity,
                     ease: "easeInOut"
                 }}
-                className="w-24 h-24 rounded-3xl bg-slate-100 flex items-center justify-center mx-auto mb-6"
+                className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl sm:rounded-3xl bg-slate-100 flex items-center justify-center mx-auto mb-4 sm:mb-6"
             >
-                <span className="text-5xl">📝</span>
+                <span className="text-4xl sm:text-5xl">📝</span>
             </motion.div>
-            <h3 className="text-xl font-semibold text-slate-800 mb-2">
+            <h3 className="text-lg sm:text-xl font-semibold text-slate-800 mb-2">
                 {search ? "No matching notes" : "No Notes Uploaded Yet"}
             </h3>
-            <p className="text-sm text-slate-500 max-w-md mx-auto">
+            <p className="text-xs sm:text-sm text-slate-500 max-w-md mx-auto">
                 {search
                     ? "Try adjusting your search terms."
                     : "Start sharing your knowledge with the community by uploading your first note."}
@@ -627,7 +663,7 @@ const MyNotes = () => {
                     <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
-                        className="mt-6 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-6 py-2.5 rounded-xl font-semibold text-sm transition-colors inline-flex items-center gap-2 shadow-md hover:shadow-lg"
+                        className="mt-6 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-5 sm:px-6 py-2 sm:py-2.5 rounded-xl font-semibold text-sm transition-colors inline-flex items-center gap-2 shadow-md hover:shadow-lg"
                     >
                         <svg className="w-4 h-4" viewBox="0 0 16 16" fill="none">
                             <path d="M8 1v10M5 4l3-3 3 3M2 12v1.5A1.5 1.5 0 003.5 15h9a1.5 1.5 0 001.5-1.5V12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -640,7 +676,8 @@ const MyNotes = () => {
     );
 
     return (
-        <div className="flex min-h-screen bg-gradient-to-br from-[#F7F8FA] to-[#EEF0F4]">
+        <div className="flex min-h-screen bg-gradient-to-br from-[#F7F8FA] to-[#EEF0F4] relative">
+            {/* Toaster - UNCHANGED */}
             <Toaster
                 position="top-right"
                 toastOptions={{
@@ -665,39 +702,73 @@ const MyNotes = () => {
                     },
                 }}
             />
-            <UserSidebar />
 
-            <div className="flex-1 overflow-y-auto">
-                <div className="max-w-6xl mx-auto px-6 py-10">
+            {/* Mobile Sidebar Overlay */}
+            <AnimatePresence>
+                {showMobileSidebar && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={() => setShowMobileSidebar(false)}
+                        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
+                    />
+                )}
+            </AnimatePresence>
 
-                    {/* Header Section */}
+            {/* Mobile Sidebar */}
+            <motion.div
+                initial={{ x: -300 }}
+                animate={{ x: showMobileSidebar ? 0 : -300 }}
+                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                className="fixed left-0 top-0 bottom-0 w-72 bg-white z-50 lg:hidden shadow-2xl"
+            >
+                <UserSidebar />
+            </motion.div>
+
+            {/* Desktop Sidebar */}
+            <div className="hidden lg:block">
+                <UserSidebar />
+            </div>
+
+            {/* Main Content */}
+            <div className="flex-1 overflow-y-auto w-full">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10">
+
+                    {/* Mobile Menu Button */}
+                    <MobileMenuButton
+                        showSidebar={showMobileSidebar}
+                        setShowSidebar={setShowMobileSidebar}
+                    />
+
+                    {/* Header Section - ENHANCED RESPONSIVE */}
                     <motion.div
                         variants={fadeInUp}
                         initial="hidden"
                         animate="visible"
                         custom={0}
-                        className="mb-8"
+                        className="mb-6 sm:mb-8 mt-12 lg:mt-0"
                     >
-                        <div className="flex items-center gap-2 mb-1">
+                        <div className="flex flex-wrap items-center gap-2 mb-2">
                             <motion.span
                                 initial={{ scale: 0.8, opacity: 0 }}
                                 animate={{ scale: 1, opacity: 1 }}
                                 transition={{ delay: 0.2 }}
-                                className="text-xs font-semibold uppercase tracking-widest text-indigo-500 bg-indigo-50 px-2.5 py-1 rounded-full"
+                                className="text-[10px] sm:text-xs font-semibold uppercase tracking-widest text-indigo-500 bg-indigo-50 px-2.5 py-1 rounded-full"
                             >
                                 My Content
                             </motion.span>
-                            <span className="text-xs text-slate-400 ml-2">
+                            <span className="text-[10px] sm:text-xs text-slate-400 ml-1 sm:ml-2">
                                 {filteredAndSortedNotes.length} {filteredAndSortedNotes.length === 1 ? "note" : "notes"}
                             </span>
                         </div>
-                        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
                             <div>
                                 <motion.h1
                                     initial={{ x: -20, opacity: 0 }}
                                     animate={{ x: 0, opacity: 1 }}
                                     transition={{ delay: 0.3 }}
-                                    className="text-[2rem] font-bold tracking-tight text-slate-900 leading-tight"
+                                    className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-slate-900 leading-tight"
                                 >
                                     My Notes
                                 </motion.h1>
@@ -705,7 +776,7 @@ const MyNotes = () => {
                                     initial={{ x: -20, opacity: 0 }}
                                     animate={{ x: 0, opacity: 1 }}
                                     transition={{ delay: 0.4 }}
-                                    className="text-sm text-slate-500 mt-1.5 max-w-2xl"
+                                    className="text-xs sm:text-sm text-slate-500 mt-1.5 max-w-2xl"
                                 >
                                     Manage and organize all your uploaded educational resources in one place.
                                 </motion.p>
@@ -714,7 +785,7 @@ const MyNotes = () => {
                                 <motion.button
                                     whileHover={{ scale: 1.05 }}
                                     whileTap={{ scale: 0.95 }}
-                                    className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-xl text-sm font-medium transition-all shadow-md hover:shadow-lg"
+                                    className="flex items-center justify-center gap-2 px-4 py-2 sm:py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-xl text-sm font-medium transition-all shadow-md hover:shadow-lg w-full sm:w-auto"
                                 >
                                     <svg className="w-4 h-4" viewBox="0 0 16 16" fill="none">
                                         <path d="M8 1v10M5 4l3-3 3 3M2 12v1.5A1.5 1.5 0 003.5 15h9a1.5 1.5 0 001.5-1.5V12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -734,11 +805,11 @@ const MyNotes = () => {
                                 exit={{ opacity: 0, y: -10 }}
                                 className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-4 flex items-center gap-2"
                             >
-                                <span className="text-lg">⚠️</span>
-                                <span className="text-sm">{error}</span>
+                                <span className="text-lg flex-shrink-0">⚠️</span>
+                                <span className="text-xs sm:text-sm flex-1">{error}</span>
                                 <button
                                     onClick={() => setError(null)}
-                                    className="ml-auto text-red-500 hover:text-red-700 transition-colors"
+                                    className="text-red-500 hover:text-red-700 transition-colors p-1 flex-shrink-0"
                                 >
                                     ✕
                                 </button>
@@ -746,12 +817,12 @@ const MyNotes = () => {
                         )}
                     </AnimatePresence>
 
-                    {/* Statistics Cards */}
+                    {/* Statistics Cards - ENHANCED RESPONSIVE */}
                     <motion.div
                         variants={containerVariants}
                         initial="hidden"
                         animate="visible"
-                        className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"
+                        className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8"
                     >
                         {[
                             { label: "Total Notes", value: stats.total, icon: "📚", color: "indigo" },
@@ -769,11 +840,11 @@ const MyNotes = () => {
                                     transition: { duration: 0.2 }
                                 }}
                                 whileTap={{ scale: 0.98 }}
-                                className="bg-white rounded-2xl border border-slate-200/80 shadow-[0_1px_4px_0_rgba(0,0,0,0.06)] p-5 hover:shadow-xl transition-all duration-300 cursor-pointer"
+                                className="bg-white/80 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-slate-200/80 shadow-[0_1px_4px_0_rgba(0,0,0,0.06)] p-4 sm:p-5 hover:shadow-xl transition-all duration-300 cursor-pointer"
                             >
                                 <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                                    <div className="min-w-0">
+                                        <p className="text-[10px] sm:text-xs font-semibold uppercase tracking-wide text-slate-500 truncate">
                                             {stat.label}
                                         </p>
                                         <motion.p
@@ -784,7 +855,7 @@ const MyNotes = () => {
                                                 type: "spring",
                                                 stiffness: 300
                                             }}
-                                            className={`text-2xl font-bold mt-1 text-${stat.color}-600`}
+                                            className={`text-lg sm:text-2xl font-bold mt-1 text-${stat.color}-600 truncate`}
                                         >
                                             {loading ? "..." : stat.value}
                                         </motion.p>
@@ -792,22 +863,22 @@ const MyNotes = () => {
                                     <motion.div
                                         whileHover={{ rotate: 360, scale: 1.1 }}
                                         transition={{ duration: 0.5 }}
-                                        className={`w-10 h-10 rounded-xl bg-${stat.color}-50 flex items-center justify-center`}
+                                        className={`w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-${stat.color}-50 flex items-center justify-center flex-shrink-0`}
                                     >
-                                        <span className="text-lg">{stat.icon}</span>
+                                        <span className="text-base sm:text-lg">{stat.icon}</span>
                                     </motion.div>
                                 </div>
                             </motion.div>
                         ))}
                     </motion.div>
 
-                    {/* Search and Sort Bar */}
+                    {/* Search and Sort Bar - ENHANCED RESPONSIVE */}
                     <motion.div
                         variants={fadeInUp}
                         initial="hidden"
                         animate="visible"
                         custom={2}
-                        className="bg-white rounded-2xl border border-slate-200/80 shadow-[0_1px_4px_0_rgba(0,0,0,0.06)] p-4 mb-8"
+                        className="bg-white/80 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-slate-200/80 shadow-[0_1px_4px_0_rgba(0,0,0,0.06)] p-3 sm:p-4 mb-6 sm:mb-8"
                     >
                         <div className="flex flex-col sm:flex-row gap-3">
                             <div className="flex-1 relative">
@@ -820,7 +891,7 @@ const MyNotes = () => {
                                     placeholder="Search your notes..."
                                     value={search}
                                     onChange={(e) => setSearch(e.target.value)}
-                                    className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                                    className="w-full pl-10 pr-8 py-2 sm:py-2.5 bg-slate-50/80 backdrop-blur-sm border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400 transition-all"
                                 />
                                 {search && (
                                     <motion.button
@@ -839,7 +910,7 @@ const MyNotes = () => {
                                 <select
                                     value={sortBy}
                                     onChange={(e) => setSortBy(e.target.value)}
-                                    className="px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all cursor-pointer hover:bg-slate-100"
+                                    className="flex-1 sm:flex-none px-3 sm:px-4 py-2 sm:py-2.5 bg-slate-50/80 backdrop-blur-sm border border-slate-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400 transition-all cursor-pointer hover:bg-slate-100"
                                 >
                                     <option value="latest">🆕 Latest</option>
                                     <option value="oldest">📅 Oldest</option>
@@ -851,7 +922,7 @@ const MyNotes = () => {
                         </div>
                     </motion.div>
 
-                    {/* Notes Grid */}
+                    {/* Notes Grid - ENHANCED RESPONSIVE */}
                     <AnimatePresence mode="wait">
                         {loading ? (
                             <LoadingSkeleton key="loading" />
@@ -863,7 +934,7 @@ const MyNotes = () => {
                                 variants={containerVariants}
                                 initial="hidden"
                                 animate="visible"
-                                className="grid md:grid-cols-2 gap-5"
+                                className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5"
                             >
                                 {filteredAndSortedNotes.map((note, index) => {
                                     const fileIcon = getFileIcon(note.fileUrl);
@@ -875,30 +946,30 @@ const MyNotes = () => {
                                             {...cardHover}
                                             whileHover="hover"
                                             whileTap="tap"
-                                            className="group bg-white rounded-2xl border border-slate-200/80 shadow-[0_1px_4px_0_rgba(0,0,0,0.06)] overflow-hidden hover:shadow-2xl hover:border-indigo-300 transition-all duration-300"
+                                            className="group bg-white/80 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-slate-200/80 shadow-[0_1px_4px_0_rgba(0,0,0,0.06)] overflow-hidden hover:shadow-2xl hover:border-indigo-300 transition-all duration-300"
                                         >
                                             {/* Note Header */}
-                                            <div className="px-5 py-4 border-b border-slate-100 flex items-start gap-3">
+                                            <div className="px-4 sm:px-5 py-3 sm:py-4 border-b border-slate-100 flex items-start gap-3">
                                                 <motion.div
                                                     whileHover={{ scale: 1.1, rotate: 10 }}
-                                                    className={`w-10 h-10 rounded-xl ${fileIcon.color} flex items-center justify-center flex-shrink-0 mt-0.5 group-hover:scale-110 transition-all duration-300`}
+                                                    className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl ${fileIcon.color} flex items-center justify-center flex-shrink-0 mt-0.5 group-hover:scale-110 transition-all duration-300`}
                                                 >
-                                                    <span className="text-lg">{fileIcon.icon}</span>
+                                                    <span className="text-base sm:text-lg">{fileIcon.icon}</span>
                                                 </motion.div>
                                                 <div className="flex-1 min-w-0">
-                                                    <h2 className="text-base font-bold text-slate-900 truncate group-hover:text-indigo-600 transition-colors">
+                                                    <h2 className="text-sm sm:text-base font-bold text-slate-900 truncate group-hover:text-indigo-600 transition-colors">
                                                         {note.title}
                                                     </h2>
-                                                    <div className="flex items-center gap-2 mt-0.5">
-                                                        <span className="inline-flex items-center gap-1 bg-slate-100 px-2 py-0.5 rounded-full text-xs text-slate-600">
+                                                    <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mt-0.5">
+                                                        <span className="inline-flex items-center gap-0.5 sm:gap-1 bg-slate-100 px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-xs text-slate-600">
                                                             {note.category?.icon || "📂"}
-                                                            {note.category?.name || "General"}
+                                                            <span className="hidden xs:inline">{note.category?.name || "General"}</span>
+                                                            <span className="xs:hidden">{note.category?.name?.slice(0, 8) || "Gen"}</span>
                                                         </span>
-                                                        <span className="text-xs text-slate-400">
+                                                        <span className="text-[10px] sm:text-xs text-slate-400">
                                                             {new Date(note.createdAt).toLocaleDateString('en-US', {
                                                                 month: 'short',
-                                                                day: 'numeric',
-                                                                year: 'numeric'
+                                                                day: 'numeric'
                                                             })}
                                                         </span>
                                                     </div>
@@ -906,44 +977,44 @@ const MyNotes = () => {
                                             </div>
 
                                             {/* Note Stats */}
-                                            <div className="px-5 py-3 bg-slate-50/50 border-b border-slate-100 flex items-center gap-4 text-xs">
-                                                <span className="flex items-center gap-1.5 text-slate-500">
+                                            <div className="px-4 sm:px-5 py-2 sm:py-3 bg-slate-50/50 border-b border-slate-100 flex flex-wrap items-center gap-3 sm:gap-4 text-[10px] sm:text-xs">
+                                                <span className="flex items-center gap-1 sm:gap-1.5 text-slate-500">
                                                     <span>👁️</span>
                                                     <span>{note.views || 0}</span>
                                                 </span>
-                                                <span className="flex items-center gap-1.5 text-slate-500">
+                                                <span className="flex items-center gap-1 sm:gap-1.5 text-slate-500">
                                                     <span>⬇️</span>
                                                     <span>{note.downloads || 0}</span>
                                                 </span>
                                                 {note.fileSize && (
-                                                    <span className="flex items-center gap-1.5 text-slate-400">
+                                                    <span className="flex items-center gap-1 sm:gap-1.5 text-slate-400">
                                                         <span>📦</span>
                                                         <span>{formatFileSize(note.fileSize)}</span>
                                                     </span>
                                                 )}
-                                                <span className="ml-auto text-slate-400 text-xs">
+                                                <span className="ml-auto text-slate-400 text-[10px] sm:text-xs">
                                                     {note.fileType || "File"}
                                                 </span>
                                             </div>
 
                                             {/* Note Description */}
                                             {note.description && (
-                                                <div className="px-5 py-3 border-b border-slate-100">
-                                                    <p className="text-sm text-slate-600 line-clamp-2">
+                                                <div className="px-4 sm:px-5 py-2 sm:py-3 border-b border-slate-100">
+                                                    <p className="text-xs sm:text-sm text-slate-600 line-clamp-2">
                                                         {note.description}
                                                     </p>
                                                 </div>
                                             )}
 
-                                            {/* Actions */}
-                                            <div className="px-5 py-4 flex flex-wrap gap-2">
+                                            {/* Actions - ENHANCED RESPONSIVE */}
+                                            <div className="px-4 sm:px-5 py-3 sm:py-4 flex flex-wrap gap-1.5 sm:gap-2">
                                                 <Link to={`/note/${note._id}`}>
                                                     <motion.button
                                                         whileHover={{ scale: 1.05 }}
                                                         whileTap={{ scale: 0.95 }}
-                                                        className="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-xl text-xs font-semibold transition-colors flex items-center gap-1.5"
+                                                        className="bg-slate-900 hover:bg-slate-800 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-[10px] sm:text-xs font-semibold transition-colors flex items-center gap-1 sm:gap-1.5"
                                                     >
-                                                        <svg className="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none">
+                                                        <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5" viewBox="0 0 16 16" fill="none">
                                                             <path d="M8 3C4.5 3 2 7 2 7s2.5 4 6 4 6-4 6-4-2.5-4-6-4z" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
                                                             <circle cx="8" cy="7" r="1.5" stroke="currentColor" strokeWidth="1.4" />
                                                         </svg>
@@ -955,9 +1026,9 @@ const MyNotes = () => {
                                                     whileHover={{ scale: 1.05 }}
                                                     whileTap={{ scale: 0.95 }}
                                                     onClick={() => handleDownload(note._id)}
-                                                    className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-xs font-semibold transition-colors flex items-center gap-1.5"
+                                                    className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-[10px] sm:text-xs font-semibold transition-colors flex items-center gap-1 sm:gap-1.5"
                                                 >
-                                                    <svg className="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none">
+                                                    <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5" viewBox="0 0 16 16" fill="none">
                                                         <path d="M8 10V1M5 4l3-3 3 3M2 12v1.5A1.5 1.5 0 003.5 15h9a1.5 1.5 0 001.5-1.5V12" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
                                                     </svg>
                                                     Download
@@ -970,9 +1041,9 @@ const MyNotes = () => {
                                                         setEditingNote(note);
                                                         setIsEditModalOpen(true);
                                                     }}
-                                                    className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-semibold transition-colors flex items-center gap-1.5"
+                                                    className="bg-amber-500 hover:bg-amber-600 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-[10px] sm:text-xs font-semibold transition-colors flex items-center gap-1 sm:gap-1.5"
                                                 >
-                                                    <svg className="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none">
+                                                    <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5" viewBox="0 0 16 16" fill="none">
                                                         <path d="M11.5 2.5l2 2L4.5 13.5l-3 .5.5-3L11.5 2.5z" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
                                                     </svg>
                                                     Edit
@@ -986,19 +1057,20 @@ const MyNotes = () => {
                                                         setIsDeleteModalOpen(true);
                                                     }}
                                                     disabled={deletingId === note._id}
-                                                    className="ml-auto bg-red-50 hover:bg-red-100 text-red-600 px-4 py-2 rounded-xl text-xs font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
+                                                    className="ml-auto bg-red-50 hover:bg-red-100 text-red-600 px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-[10px] sm:text-xs font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1 sm:gap-1.5"
                                                 >
                                                     {deletingId === note._id ? (
                                                         <>
-                                                            <svg className="animate-spin w-3.5 h-3.5" viewBox="0 0 24 24" fill="none">
+                                                            <svg className="animate-spin w-3 h-3 sm:w-3.5 sm:h-3.5" viewBox="0 0 24 24" fill="none">
                                                                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
                                                                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l3-3-3-3V4a10 10 0 100 10h-2a8 8 0 01-8-8z" />
                                                             </svg>
-                                                            Deleting...
+                                                            <span className="hidden xs:inline">Deleting...</span>
+                                                            <span className="xs:hidden">DL...</span>
                                                         </>
                                                     ) : (
                                                         <>
-                                                            <svg className="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none">
+                                                            <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5" viewBox="0 0 16 16" fill="none">
                                                                 <path d="M2 3.5h12M6 1h4M3.5 3.5L5 14h6l1.5-10.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
                                                             </svg>
                                                             Delete
@@ -1021,21 +1093,21 @@ const MyNotes = () => {
                             transition={{ delay: 0.5 }}
                             className="mt-6 text-center"
                         >
-                            <p className="text-xs text-slate-400">
+                            <p className="text-[10px] sm:text-xs text-slate-400">
                                 Showing {filteredAndSortedNotes.length} of {notes.length} notes
                                 {search && ` matching "${search}"`}
                             </p>
                         </motion.div>
                     )}
 
-                    {/* Footer */}
+                    {/* Footer - ENHANCED RESPONSIVE */}
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.6 }}
-                        className="mt-10 text-center"
+                        className="mt-8 sm:mt-10 text-center"
                     >
-                        <p className="text-xs text-slate-400">
+                        <p className="text-[10px] sm:text-xs text-slate-400">
                             NotesSaver • My Notes • {new Date().getFullYear()}
                         </p>
                     </motion.div>

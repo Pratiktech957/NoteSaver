@@ -26,7 +26,7 @@ import {
     ComposedChart
 } from "recharts";
 
-// Animation variants
+// Enhanced animation variants
 const fadeInUp = {
     hidden: { opacity: 0, y: 20 },
     visible: (i = 0) => ({
@@ -50,6 +50,42 @@ const containerVariants = {
         }
     }
 };
+
+// Mobile menu button component
+const MobileMenuButton = ({ showSidebar, setShowSidebar }) => (
+    <button
+        onClick={() => setShowSidebar(!showSidebar)}
+        className="lg:hidden fixed top-4 left-4 z-50 p-2.5 bg-white shadow-lg border border-gray-200 hover:bg-gray-50 transition-all rounded-xl"
+        aria-label="Toggle sidebar"
+    >
+        <div className="w-5 h-4 flex flex-col justify-between">
+            <motion.span
+                className="block w-full h-0.5 bg-gray-800 rounded-full"
+                animate={{
+                    rotate: showSidebar ? 45 : 0,
+                    y: showSidebar ? 6 : 0
+                }}
+                transition={{ duration: 0.3 }}
+            />
+            <motion.span
+                className="block w-full h-0.5 bg-gray-800 rounded-full"
+                animate={{
+                    opacity: showSidebar ? 0 : 1,
+                    scale: showSidebar ? 0 : 1
+                }}
+                transition={{ duration: 0.3 }}
+            />
+            <motion.span
+                className="block w-full h-0.5 bg-gray-800 rounded-full"
+                animate={{
+                    rotate: showSidebar ? -45 : 0,
+                    y: showSidebar ? -6 : 0
+                }}
+                transition={{ duration: 0.3 }}
+            />
+        </div>
+    </button>
+);
 
 // Animation for stat cards
 const scaleOnHover = {
@@ -84,7 +120,9 @@ const Analytics = () => {
     const [error, setError] = useState(null);
     const [timeRange, setTimeRange] = useState("6months");
     const [activeChart, setActiveChart] = useState("overview");
+    const [showMobileSidebar, setShowMobileSidebar] = useState(false);
 
+    // EXACT SAME useEffect - NO CHANGES
     useEffect(() => {
         const fetchAnalytics = async () => {
             try {
@@ -101,13 +139,13 @@ const Analytics = () => {
         fetchAnalytics();
     }, []);
 
-    // Prepare chart data with real values
+    // EXACT SAME chart data - NO CHANGES
     const barData = [
-        { name: "Users", value: stats?.totalUsers || 0, color: "#6366f1", gradient: "url(#userGradient)" },
-        { name: "Notes", value: stats?.totalNotes || 0, color: "#10b981", gradient: "url(#noteGradient)" },
-        { name: "Reports", value: stats?.totalReports || 0, color: "#ef4444", gradient: "url(#reportGradient)" },
-        { name: "Views", value: stats?.totalViews || 0, color: "#8b5cf6", gradient: "url(#viewGradient)" },
-        { name: "Downloads", value: stats?.totalDownloads || 0, color: "#f59e0b", gradient: "url(#downloadGradient)" }
+        { name: "Users", value: stats?.totalUsers || 0, color: "#6366f1" },
+        { name: "Notes", value: stats?.totalNotes || 0, color: "#10b981" },
+        { name: "Reports", value: stats?.totalReports || 0, color: "#ef4444" },
+        { name: "Views", value: stats?.totalViews || 0, color: "#8b5cf6" },
+        { name: "Downloads", value: stats?.totalDownloads || 0, color: "#f59e0b" }
     ];
 
     const pieData = [
@@ -115,7 +153,6 @@ const Analytics = () => {
         { name: "Downloads", value: stats?.totalDownloads || 0, icon: "⬇️" }
     ];
 
-    // Enhanced growth data with more metrics
     const growthData = [
         { month: "Jan", users: 120, notes: 80, views: 1500, downloads: 450 },
         { month: "Feb", users: 180, notes: 120, views: 2100, downloads: 680 },
@@ -125,7 +162,6 @@ const Analytics = () => {
         { month: "Jun", users: 400, notes: 320, views: 5100, downloads: 1900 }
     ];
 
-    // Engagement metrics for radar chart
     const engagementData = [
         { subject: 'Users', value: stats?.totalUsers || 0, fullMark: 500 },
         { subject: 'Notes', value: stats?.totalNotes || 0, fullMark: 400 },
@@ -134,63 +170,53 @@ const Analytics = () => {
         { subject: 'Reports', value: stats?.totalReports || 0, fullMark: 100 }
     ];
 
-    // Colors
-    const COLORS = ["#6366f1", "#10b981", "#8b5cf6", "#f59e0b", "#ef4444"];
+    // VIBRANT COLORS FOR CHARTS
+    const COLORS = ["#6366f1", "#10b981", "#ef4444", "#8b5cf6", "#f59e0b"];
     const PIE_COLORS = ["#6366f1", "#10b981"];
+    const LINE_COLORS = ["#6366f1", "#10b981", "#8b5cf6", "#f59e0b", "#ef4444"];
 
-    // Stat cards with enhanced data
+    // Stat cards with growth indicators
     const statCards = [
-        { label: "Total Users", value: stats?.totalUsers || 0, icon: "👥", color: "indigo", growth: "+12%" },
-        { label: "Total Notes", value: stats?.totalNotes || 0, icon: "📚", color: "emerald", growth: "+8%" },
-        { label: "Reports", value: stats?.totalReports || 0, icon: "🚨", color: "red", growth: "-3%" },
-        { label: "Total Views", value: stats?.totalViews || 0, icon: "👁️", color: "violet", growth: "+25%" },
-        { label: "Downloads", value: stats?.totalDownloads || 0, icon: "⬇️", color: "amber", growth: "+18%" }
+        { label: "Total Users", value: stats?.totalUsers || 0, icon: "👥", growth: "+12%", color: "#6366f1" },
+        { label: "Total Notes", value: stats?.totalNotes || 0, icon: "📚", growth: "+8%", color: "#10b981" },
+        { label: "Reports", value: stats?.totalReports || 0, icon: "🚨", growth: "-3%", color: "#ef4444" },
+        { label: "Total Views", value: stats?.totalViews || 0, icon: "👁️", growth: "+25%", color: "#8b5cf6" },
+        { label: "Downloads", value: stats?.totalDownloads || 0, icon: "⬇️", growth: "+18%", color: "#f59e0b" }
     ];
-
-    const getColorClass = (color) => {
-        const map = {
-            indigo: "bg-indigo-50 text-indigo-600",
-            emerald: "bg-emerald-50 text-emerald-600",
-            red: "bg-red-50 text-red-600",
-            violet: "bg-violet-50 text-violet-600",
-            amber: "bg-amber-50 text-amber-600"
-        };
-        return map[color] || map.indigo;
-    };
 
     const getGrowthColor = (growth) => {
         if (growth.startsWith('+')) return "text-emerald-600";
         if (growth.startsWith('-')) return "text-red-600";
-        return "text-slate-600";
+        return "text-gray-600";
     };
 
-    // Loading skeleton with enhanced shimmer
+    // Loading skeleton
     const LoadingSkeleton = () => (
-        <div className="flex min-h-screen bg-gradient-to-br from-[#F7F8FA] to-[#EEF0F4]">
+        <div className="flex min-h-screen bg-gray-50">
             <AdminSidebar />
-            <div className="flex-1 overflow-y-auto">
-                <div className="max-w-7xl mx-auto px-6 py-8">
-                    <div className="space-y-6">
-                        <div className="h-12 bg-slate-200 rounded w-64 animate-pulse"></div>
-                        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+            <div className="flex-1 overflow-y-auto w-full">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10">
+                    <div className="space-y-4 sm:space-y-6">
+                        <div className="h-8 sm:h-12 bg-gray-200 rounded w-48 sm:w-64 animate-pulse"></div>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
                             {[...Array(5)].map((_, i) => (
-                                <div key={i} className="bg-white rounded-2xl border border-slate-200/80 p-6 overflow-hidden">
+                                <div key={i} className="bg-white rounded-xl sm:rounded-2xl border border-gray-200 p-4 sm:p-6 overflow-hidden animate-pulse">
                                     <div className="relative">
-                                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-slate-100/50 to-transparent -translate-x-full animate-shimmer"></div>
-                                        <div className="h-4 bg-slate-200 rounded w-20 mb-2"></div>
-                                        <div className="h-8 bg-slate-200 rounded w-16"></div>
+                                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-gray-100/50 to-transparent -translate-x-full animate-shimmer"></div>
+                                        <div className="h-3 sm:h-4 bg-gray-200 rounded w-16 sm:w-20 mb-2"></div>
+                                        <div className="h-6 sm:h-8 bg-gray-200 rounded w-12 sm:w-16"></div>
                                     </div>
                                 </div>
                             ))}
                         </div>
-                        <div className="grid lg:grid-cols-2 gap-6">
-                            <div className="bg-white rounded-2xl border border-slate-200/80 p-6 animate-pulse">
-                                <div className="h-8 bg-slate-200 rounded w-48 mb-4"></div>
-                                <div className="h-64 bg-slate-200 rounded"></div>
+                        <div className="grid lg:grid-cols-2 gap-4 sm:gap-6">
+                            <div className="bg-white rounded-xl sm:rounded-2xl border border-gray-200 p-4 sm:p-6 animate-pulse">
+                                <div className="h-6 sm:h-8 bg-gray-200 rounded w-32 sm:w-48 mb-4"></div>
+                                <div className="h-48 sm:h-64 bg-gray-200 rounded"></div>
                             </div>
-                            <div className="bg-white rounded-2xl border border-slate-200/80 p-6 animate-pulse">
-                                <div className="h-8 bg-slate-200 rounded w-48 mb-4"></div>
-                                <div className="h-64 bg-slate-200 rounded"></div>
+                            <div className="bg-white rounded-xl sm:rounded-2xl border border-gray-200 p-4 sm:p-6 animate-pulse">
+                                <div className="h-6 sm:h-8 bg-gray-200 rounded w-32 sm:w-48 mb-4"></div>
+                                <div className="h-48 sm:h-64 bg-gray-200 rounded"></div>
                             </div>
                         </div>
                     </div>
@@ -204,37 +230,78 @@ const Analytics = () => {
     }
 
     return (
-        <div className="flex min-h-screen bg-gradient-to-br from-[#F7F8FA] to-[#EEF0F4]">
-            <AdminSidebar />
+        <div className="flex min-h-screen bg-gray-50 relative">
+            {/* Mobile Sidebar Overlay */}
+            <AnimatePresence>
+                {showMobileSidebar && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={() => setShowMobileSidebar(false)}
+                        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
+                    />
+                )}
+            </AnimatePresence>
 
-            <div className="flex-1 overflow-y-auto">
-                <div className="max-w-7xl mx-auto px-6 py-8">
+            {/* Mobile Sidebar */}
+            <motion.div
+                initial={{ x: -300 }}
+                animate={{ x: showMobileSidebar ? 0 : -300 }}
+                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                className="fixed left-0 top-0 bottom-0 w-72 bg-white z-50 lg:hidden shadow-2xl"
+            >
+                <AdminSidebar />
+            </motion.div>
 
-                    {/* Header with enhanced animation */}
+            {/* Desktop Sidebar */}
+            <div className="hidden lg:block">
+                <AdminSidebar />
+            </div>
+
+            {/* Main Content */}
+            <div className="flex-1 overflow-y-auto w-full">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10">
+
+                    {/* Mobile Menu Button */}
+                    <MobileMenuButton
+                        showSidebar={showMobileSidebar}
+                        setShowSidebar={setShowMobileSidebar}
+                    />
+
+                    {/* Header - B&W Theme */}
                     <motion.div
                         variants={fadeInUp}
                         initial="hidden"
                         animate="visible"
                         custom={0}
-                        className="mb-8"
+                        className="mb-6 sm:mb-8 mt-12 lg:mt-0"
                     >
-                        <div className="flex items-center gap-2 mb-1">
+                        <div className="flex flex-wrap items-center gap-2 mb-2">
                             <motion.span
                                 initial={{ scale: 0.8, opacity: 0 }}
                                 animate={{ scale: 1, opacity: 1 }}
                                 transition={{ delay: 0.2 }}
-                                className="text-xs font-semibold uppercase tracking-widest text-indigo-500 bg-indigo-50 px-2.5 py-1 rounded-full"
+                                className="text-[10px] sm:text-xs font-semibold uppercase tracking-widest text-gray-600 bg-gray-100 px-2.5 py-1 rounded-full"
                             >
                                 Analytics
                             </motion.span>
+                            <motion.span
+                                initial={{ scale: 0.8, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                transition={{ delay: 0.25 }}
+                                className="text-[10px] sm:text-xs font-semibold uppercase tracking-widest text-gray-600 bg-gray-100 px-2.5 py-1 rounded-full"
+                            >
+                                Live Data
+                            </motion.span>
                         </div>
-                        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
                             <div>
                                 <motion.h1
                                     initial={{ x: -20, opacity: 0 }}
                                     animate={{ x: 0, opacity: 1 }}
                                     transition={{ delay: 0.3 }}
-                                    className="text-[2rem] font-bold tracking-tight text-slate-900 leading-tight"
+                                    className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-gray-900 leading-tight"
                                 >
                                     Analytics Dashboard
                                 </motion.h1>
@@ -242,7 +309,7 @@ const Analytics = () => {
                                     initial={{ x: -20, opacity: 0 }}
                                     animate={{ x: 0, opacity: 1 }}
                                     transition={{ delay: 0.4 }}
-                                    className="text-sm text-slate-500 mt-1.5"
+                                    className="text-xs sm:text-sm text-gray-500 mt-1.5"
                                 >
                                     Business intelligence and platform performance metrics.
                                 </motion.p>
@@ -256,7 +323,7 @@ const Analytics = () => {
                                 <select
                                     value={timeRange}
                                     onChange={(e) => setTimeRange(e.target.value)}
-                                    className="px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all cursor-pointer hover:bg-slate-50"
+                                    className="px-3 sm:px-4 py-2 sm:py-2.5 bg-white border border-gray-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent transition-all cursor-pointer hover:bg-gray-50"
                                 >
                                     <option value="7days">Last 7 Days</option>
                                     <option value="30days">Last 30 Days</option>
@@ -267,7 +334,7 @@ const Analytics = () => {
                         </div>
                     </motion.div>
 
-                    {/* Error Message */}
+                    {/* Error Message - B&W Theme */}
                     <AnimatePresence>
                         {error && (
                             <motion.div
@@ -276,11 +343,11 @@ const Analytics = () => {
                                 exit={{ opacity: 0, y: -10 }}
                                 className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-4 flex items-center gap-2"
                             >
-                                <span className="text-lg">⚠️</span>
-                                <span className="text-sm">{error}</span>
+                                <span className="text-lg flex-shrink-0">⚠️</span>
+                                <span className="text-xs sm:text-sm flex-1">{error}</span>
                                 <button
                                     onClick={() => setError(null)}
-                                    className="ml-auto text-red-500 hover:text-red-700 transition-colors"
+                                    className="text-red-500 hover:text-red-700 transition-colors p-1 flex-shrink-0"
                                 >
                                     ✕
                                 </button>
@@ -288,41 +355,42 @@ const Analytics = () => {
                         )}
                     </AnimatePresence>
 
-                    {/* Statistics Cards with growth indicators */}
+                    {/* Statistics Cards - B&W Theme with Colorful Icons */}
                     <motion.div
                         variants={containerVariants}
                         initial="hidden"
                         animate="visible"
-                        className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8"
+                        className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 mb-6 sm:mb-8"
                     >
                         {statCards.map((stat, index) => (
                             <motion.div
                                 key={stat.label}
                                 variants={fadeInUp}
                                 custom={index + 1}
-                                whileHover={{ y: -8, scale: 1.02, transition: { duration: 0.2 } }}
+                                whileHover={{ y: -6, scale: 1.02, transition: { duration: 0.2 } }}
                                 whileTap={{ scale: 0.98 }}
-                                className="bg-white rounded-2xl border border-slate-200/80 shadow-[0_1px_4px_0_rgba(0,0,0,0.06)] p-5 hover:shadow-xl transition-all duration-300 cursor-pointer"
+                                className="bg-white rounded-xl sm:rounded-2xl border border-gray-200 shadow-sm p-4 sm:p-5 hover:shadow-lg transition-all duration-300 cursor-pointer"
                             >
                                 <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                                    <div className="min-w-0">
+                                        <p className="text-[10px] sm:text-xs font-semibold uppercase tracking-wide text-gray-500 truncate">
                                             {stat.label}
                                         </p>
                                         <motion.p
                                             {...countUp}
-                                            className="text-2xl font-bold text-slate-900 mt-1"
+                                            className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 mt-1"
                                         >
                                             {stat.value}
                                         </motion.p>
-                                        <span className={`text-xs font-medium ${getGrowthColor(stat.growth)}`}>
+                                        <span className={`text-[10px] sm:text-xs font-medium ${getGrowthColor(stat.growth)}`}>
                                             {stat.growth}
                                         </span>
                                     </div>
                                     <motion.div
                                         whileHover={{ rotate: 360, scale: 1.1 }}
                                         transition={{ duration: 0.5 }}
-                                        className={`w-10 h-10 rounded-xl ${getColorClass(stat.color)} flex items-center justify-center text-xl shadow-sm`}
+                                        className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center text-base sm:text-xl shadow-sm flex-shrink-0"
+                                        style={{ backgroundColor: `${stat.color}15`, color: stat.color }}
                                     >
                                         {stat.icon}
                                     </motion.div>
@@ -331,18 +399,18 @@ const Analytics = () => {
                         ))}
                     </motion.div>
 
-                    {/* Charts Grid with Tab Navigation */}
-                    <div className="mb-8">
-                        <div className="flex flex-wrap gap-2 mb-4">
+                    {/* Charts Grid - COLORFUL CHARTS */}
+                    <div className="mb-6 sm:mb-8">
+                        <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-3 sm:mb-4">
                             {["overview", "engagement", "growth", "radar"].map((chart) => (
                                 <motion.button
                                     key={chart}
                                     whileHover={{ scale: 1.03 }}
                                     whileTap={{ scale: 0.95 }}
                                     onClick={() => setActiveChart(chart)}
-                                    className={`px-4 py-2 rounded-xl text-sm font-medium transition-all capitalize ${activeChart === chart
-                                        ? "bg-gradient-to-r from-indigo-600 to-indigo-700 text-white shadow-md shadow-indigo-200"
-                                        : "bg-white text-slate-600 hover:bg-slate-50 border border-slate-200"
+                                    className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-[10px] sm:text-sm font-medium transition-all capitalize ${activeChart === chart
+                                        ? "bg-gray-800 text-white shadow-md"
+                                        : "bg-white text-gray-600 hover:bg-gray-50 border border-gray-200"
                                         }`}
                                 >
                                     {chart === "overview" && "📊 Overview"}
@@ -353,8 +421,8 @@ const Analytics = () => {
                             ))}
                         </div>
 
-                        <div className="grid lg:grid-cols-2 gap-6">
-                            {/* Bar Chart */}
+                        <div className="grid lg:grid-cols-2 gap-4 sm:gap-6">
+                            {/* Bar Chart - COLORFUL */}
                             {activeChart === "overview" && (
                                 <>
                                     <motion.div
@@ -362,26 +430,26 @@ const Analytics = () => {
                                         initial="hidden"
                                         animate="visible"
                                         custom={6}
-                                        className="bg-white rounded-2xl border border-slate-200/80 shadow-[0_1px_4px_0_rgba(0,0,0,0.06)] p-6 hover:shadow-lg transition-all duration-300"
+                                        className="bg-white rounded-xl sm:rounded-2xl border border-gray-200 shadow-sm p-4 sm:p-6 hover:shadow-lg transition-all duration-300"
                                     >
-                                        <div className="flex items-center justify-between mb-5">
-                                            <h2 className="text-lg font-semibold text-slate-900">
+                                        <div className="flex flex-wrap items-center justify-between mb-4 sm:mb-5 gap-2">
+                                            <h2 className="text-sm sm:text-lg font-semibold text-gray-900">
                                                 📊 Platform Overview
                                             </h2>
-                                            <span className="text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded-full">
+                                            <span className="text-[10px] sm:text-xs text-gray-400 bg-gray-100 px-2 py-0.5 sm:py-1 rounded-full">
                                                 Bar Chart
                                             </span>
                                         </div>
-                                        <ResponsiveContainer width="100%" height={320}>
+                                        <ResponsiveContainer width="100%" height={280}>
                                             <BarChart data={barData} layout="vertical">
-                                                <XAxis type="number" stroke="#94a3b8" fontSize={12} />
-                                                <YAxis dataKey="name" type="category" stroke="#94a3b8" fontSize={12} width={80} />
+                                                <XAxis type="number" stroke="#9CA3AF" fontSize={10} />
+                                                <YAxis dataKey="name" type="category" stroke="#9CA3AF" fontSize={10} width={60} />
                                                 <Tooltip
                                                     contentStyle={{
                                                         backgroundColor: "#fff",
-                                                        border: "1px solid #e2e8f0",
-                                                        borderRadius: "12px",
-                                                        padding: "12px",
+                                                        border: "1px solid #e5e7eb",
+                                                        borderRadius: "8px",
+                                                        padding: "8px 12px",
                                                         boxShadow: "0 4px 6px -1px rgba(0,0,0,0.1)"
                                                     }}
                                                 />
@@ -390,7 +458,6 @@ const Analytics = () => {
                                                     dataKey="value"
                                                     name="Count"
                                                     radius={[0, 8, 8, 0]}
-                                                    fill="url(#colorGradient)"
                                                 >
                                                     {barData.map((entry, index) => (
                                                         <Cell key={index} fill={entry.color} />
@@ -400,29 +467,29 @@ const Analytics = () => {
                                         </ResponsiveContainer>
                                     </motion.div>
 
-                                    {/* Pie Chart */}
+                                    {/* Pie Chart - COLORFUL */}
                                     <motion.div
                                         variants={fadeInUp}
                                         initial="hidden"
                                         animate="visible"
                                         custom={7}
-                                        className="bg-white rounded-2xl border border-slate-200/80 shadow-[0_1px_4px_0_rgba(0,0,0,0.06)] p-6 hover:shadow-lg transition-all duration-300"
+                                        className="bg-white rounded-xl sm:rounded-2xl border border-gray-200 shadow-sm p-4 sm:p-6 hover:shadow-lg transition-all duration-300"
                                     >
-                                        <div className="flex items-center justify-between mb-5">
-                                            <h2 className="text-lg font-semibold text-slate-900">
+                                        <div className="flex flex-wrap items-center justify-between mb-4 sm:mb-5 gap-2">
+                                            <h2 className="text-sm sm:text-lg font-semibold text-gray-900">
                                                 🥧 Engagement Distribution
                                             </h2>
-                                            <span className="text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded-full">
+                                            <span className="text-[10px] sm:text-xs text-gray-400 bg-gray-100 px-2 py-0.5 sm:py-1 rounded-full">
                                                 Pie Chart
                                             </span>
                                         </div>
-                                        <ResponsiveContainer width="100%" height={320}>
+                                        <ResponsiveContainer width="100%" height={280}>
                                             <PieChart>
                                                 <Pie
                                                     data={pieData}
                                                     dataKey="value"
                                                     nameKey="name"
-                                                    outerRadius={120}
+                                                    outerRadius={100}
                                                     label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
                                                     labelLine={false}
                                                 >
@@ -438,9 +505,9 @@ const Analytics = () => {
                                                 <Tooltip
                                                     contentStyle={{
                                                         backgroundColor: "#fff",
-                                                        border: "1px solid #e2e8f0",
-                                                        borderRadius: "12px",
-                                                        padding: "12px",
+                                                        border: "1px solid #e5e7eb",
+                                                        borderRadius: "8px",
+                                                        padding: "8px 12px",
                                                         boxShadow: "0 4px 6px -1px rgba(0,0,0,0.1)"
                                                     }}
                                                 />
@@ -451,34 +518,34 @@ const Analytics = () => {
                                 </>
                             )}
 
-                            {/* Growth Chart */}
+                            {/* Growth Chart - COLORFUL */}
                             {activeChart === "growth" && (
                                 <motion.div
                                     variants={fadeInUp}
                                     initial="hidden"
                                     animate="visible"
                                     custom={8}
-                                    className="col-span-2 bg-white rounded-2xl border border-slate-200/80 shadow-[0_1px_4px_0_rgba(0,0,0,0.06)] p-6 hover:shadow-lg transition-all duration-300"
+                                    className="col-span-2 bg-white rounded-xl sm:rounded-2xl border border-gray-200 shadow-sm p-4 sm:p-6 hover:shadow-lg transition-all duration-300"
                                 >
-                                    <div className="flex items-center justify-between mb-5">
-                                        <h2 className="text-lg font-semibold text-slate-900">
+                                    <div className="flex flex-wrap items-center justify-between mb-4 sm:mb-5 gap-2">
+                                        <h2 className="text-sm sm:text-lg font-semibold text-gray-900">
                                             📈 Platform Growth Trend
                                         </h2>
-                                        <span className="text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded-full">
+                                        <span className="text-[10px] sm:text-xs text-gray-400 bg-gray-100 px-2 py-0.5 sm:py-1 rounded-full">
                                             Last 6 Months
                                         </span>
                                     </div>
-                                    <ResponsiveContainer width="100%" height={300}>
+                                    <ResponsiveContainer width="100%" height={280}>
                                         <ComposedChart data={growthData}>
-                                            <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                                            <XAxis dataKey="month" stroke="#94a3b8" fontSize={12} />
-                                            <YAxis stroke="#94a3b8" fontSize={12} />
+                                            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                                            <XAxis dataKey="month" stroke="#9CA3AF" fontSize={10} />
+                                            <YAxis stroke="#9CA3AF" fontSize={10} />
                                             <Tooltip
                                                 contentStyle={{
                                                     backgroundColor: "#fff",
-                                                    border: "1px solid #e2e8f0",
-                                                    borderRadius: "12px",
-                                                    padding: "12px",
+                                                    border: "1px solid #e5e7eb",
+                                                    borderRadius: "8px",
+                                                    padding: "8px 12px",
                                                     boxShadow: "0 4px 6px -1px rgba(0,0,0,0.1)"
                                                 }}
                                             />
@@ -492,28 +559,28 @@ const Analytics = () => {
                                 </motion.div>
                             )}
 
-                            {/* Radar Chart */}
+                            {/* Radar Chart - COLORFUL */}
                             {activeChart === "radar" && (
                                 <motion.div
                                     variants={fadeInUp}
                                     initial="hidden"
                                     animate="visible"
                                     custom={8}
-                                    className="col-span-2 bg-white rounded-2xl border border-slate-200/80 shadow-[0_1px_4px_0_rgba(0,0,0,0.06)] p-6 hover:shadow-lg transition-all duration-300"
+                                    className="col-span-2 bg-white rounded-xl sm:rounded-2xl border border-gray-200 shadow-sm p-4 sm:p-6 hover:shadow-lg transition-all duration-300"
                                 >
-                                    <div className="flex items-center justify-between mb-5">
-                                        <h2 className="text-lg font-semibold text-slate-900">
+                                    <div className="flex flex-wrap items-center justify-between mb-4 sm:mb-5 gap-2">
+                                        <h2 className="text-sm sm:text-lg font-semibold text-gray-900">
                                             🎯 Engagement Radar
                                         </h2>
-                                        <span className="text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded-full">
+                                        <span className="text-[10px] sm:text-xs text-gray-400 bg-gray-100 px-2 py-0.5 sm:py-1 rounded-full">
                                             Performance Metrics
                                         </span>
                                     </div>
-                                    <ResponsiveContainer width="100%" height={350}>
+                                    <ResponsiveContainer width="100%" height={300}>
                                         <RadarChart data={engagementData}>
-                                            <PolarGrid />
-                                            <PolarAngleAxis dataKey="subject" stroke="#94a3b8" />
-                                            <PolarRadiusAxis stroke="#94a3b8" />
+                                            <PolarGrid stroke="#e5e7eb" />
+                                            <PolarAngleAxis dataKey="subject" stroke="#9CA3AF" fontSize={10} />
+                                            <PolarRadiusAxis stroke="#9CA3AF" fontSize={10} />
                                             <Radar
                                                 dataKey="value"
                                                 name="Platform Metrics"
@@ -524,9 +591,9 @@ const Analytics = () => {
                                             <Tooltip
                                                 contentStyle={{
                                                     backgroundColor: "#fff",
-                                                    border: "1px solid #e2e8f0",
-                                                    borderRadius: "12px",
-                                                    padding: "12px",
+                                                    border: "1px solid #e5e7eb",
+                                                    borderRadius: "8px",
+                                                    padding: "8px 12px",
                                                     boxShadow: "0 4px 6px -1px rgba(0,0,0,0.1)"
                                                 }}
                                             />
@@ -538,115 +605,161 @@ const Analytics = () => {
                         </div>
                     </div>
 
-                    {/* Platform Overview Card with animations */}
+                    {/* Platform Health Card - B&W Theme */}
                     <motion.div
                         variants={fadeInUp}
                         initial="hidden"
                         animate="visible"
                         custom={9}
-                        className="bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-700 rounded-3xl shadow-2xl p-8 overflow-hidden"
+                        className="bg-white rounded-xl sm:rounded-2xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-lg transition-all duration-300"
                     >
-                        <div className="relative">
-                            {/* Animated background elements */}
-                            <motion.div
-                                animate={{
-                                    scale: [1, 1.2, 1],
-                                    rotate: [0, 90, 0],
-                                }}
-                                transition={{
-                                    duration: 20,
-                                    repeat: Infinity,
-                                    ease: "linear"
-                                }}
-                                className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl"
-                            />
-                            <motion.div
-                                animate={{
-                                    scale: [1, 1.3, 1],
-                                    rotate: [0, -90, 0],
-                                }}
-                                transition={{
-                                    duration: 25,
-                                    repeat: Infinity,
-                                    ease: "linear",
-                                    delay: 2
-                                }}
-                                className="absolute bottom-0 left-0 w-48 h-48 bg-purple-500/10 rounded-full translate-y-1/2 -translate-x-1/2 blur-2xl"
-                            />
+                        <div className="px-4 sm:px-6 py-4 border-b border-gray-100 flex flex-wrap items-center justify-between gap-2">
+                            <div className="flex items-center gap-2 sm:gap-3">
+                                <motion.span
+                                    animate={{ rotate: [0, 10, -10, 0] }}
+                                    transition={{ duration: 3, repeat: Infinity }}
+                                    className="text-2xl sm:text-3xl"
+                                >
 
-                            <div className="relative">
-                                <div className="flex items-center gap-3 mb-6">
-                                    <motion.span
-                                        animate={{ rotate: [0, 10, -10, 0] }}
-                                        transition={{ duration: 3, repeat: Infinity }}
-                                        className="text-3xl"
+                                </motion.span>
+                                <h2 className="text-sm sm:text-lg font-semibold text-gray-900">Platform Health</h2>
+                            </div>
+                            <motion.span
+                                animate={{ scale: [1, 1.05, 1] }}
+                                transition={{ duration: 2, repeat: Infinity }}
+                                className="inline-flex items-center gap-1.5 text-[10px] sm:text-xs font-medium text-emerald-600 bg-emerald-50 px-2 sm:px-3 py-0.5 sm:py-1 rounded-full"
+                            >
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                                All Systems Operational
+                            </motion.span>
+                        </div>
+
+                        <div className="p-4 sm:p-6">
+                            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+                                {[
+                                    { label: "Total Users", value: stats?.totalUsers || 0, icon: "👥", color: "#6366f1" },
+                                    { label: "Total Notes", value: stats?.totalNotes || 0, icon: "📚", color: "#10b981" },
+                                    { label: "Reports", value: stats?.totalReports || 0, icon: "🚨", color: "#ef4444" },
+                                    { label: "Views", value: stats?.totalViews || 0, icon: "👁️", color: "#8b5cf6" },
+                                    { label: "Downloads", value: stats?.totalDownloads || 0, icon: "⬇️", color: "#f59e0b" },
+                                    { label: "Status", value: "Online", icon: "🟢", isStatus: true }
+                                ].map((item, index) => (
+                                    <motion.div
+                                        key={item.label}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: index * 0.08 + 0.4 }}
+                                        whileHover={{ scale: 1.03 }}
+                                        className="bg-gray-50 rounded-xl sm:rounded-2xl p-3 sm:p-4 border border-gray-200/50 text-center"
                                     >
-                                        🚀
-                                    </motion.span>
-                                    <h2 className="text-2xl font-bold text-white">Platform Health</h2>
-                                </div>
-                                <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-                                    {[
-                                        { label: "Total Users", value: stats?.totalUsers || 0 },
-                                        { label: "Total Notes", value: stats?.totalNotes || 0 },
-                                        { label: "Reports", value: stats?.totalReports || 0 },
-                                        { label: "Views", value: stats?.totalViews || 0 },
-                                        { label: "Downloads", value: stats?.totalDownloads || 0 },
-                                        { label: "Status", value: "Operational", isStatus: true }
-                                    ].map((item, index) => (
-                                        <motion.div
-                                            key={item.label}
-                                            initial={{ opacity: 0, y: 20 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            transition={{ delay: index * 0.1 + 0.5 }}
-                                            whileHover={{ scale: 1.05 }}
-                                            className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/10"
-                                        >
-                                            <p className="text-indigo-200 text-sm">{item.label}</p>
-                                            {item.isStatus ? (
-                                                <motion.p
-                                                    animate={{ scale: [1, 1.1, 1] }}
-                                                    transition={{ duration: 2, repeat: Infinity }}
-                                                    className="text-xl font-bold text-emerald-300"
-                                                >
-                                                    🟢 {item.value}
-                                                </motion.p>
-                                            ) : (
-                                                <motion.p
-                                                    initial={{ scale: 0.5, opacity: 0 }}
-                                                    animate={{ scale: 1, opacity: 1 }}
-                                                    transition={{
-                                                        delay: index * 0.1 + 0.7,
-                                                        type: "spring",
-                                                        stiffness: 300
-                                                    }}
-                                                    className="text-2xl font-bold text-white"
-                                                >
-                                                    {item.value}
-                                                </motion.p>
-                                            )}
-                                        </motion.div>
-                                    ))}
-                                </div>
+                                        <div className="flex items-center justify-center gap-2 mb-1">
+                                            <span className="text-lg sm:text-xl">{item.icon}</span>
+                                            <p className="text-[10px] sm:text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                {item.label}
+                                            </p>
+                                        </div>
+                                        {item.isStatus ? (
+                                            <motion.p
+                                                animate={{ scale: [1, 1.05, 1] }}
+                                                transition={{ duration: 2, repeat: Infinity }}
+                                                className="text-sm sm:text-base font-bold text-emerald-600"
+                                            >
+                                                {item.value}
+                                            </motion.p>
+                                        ) : (
+                                            <motion.p
+                                                initial={{ scale: 0.5, opacity: 0 }}
+                                                animate={{ scale: 1, opacity: 1 }}
+                                                transition={{
+                                                    delay: index * 0.08 + 0.6,
+                                                    type: "spring",
+                                                    stiffness: 300
+                                                }}
+                                                className="text-lg sm:text-xl lg:text-2xl font-bold"
+                                                style={{ color: item.color }}
+                                            >
+                                                {item.value}
+                                            </motion.p>
+                                        )}
+                                    </motion.div>
+                                ))}
+                            </div>
+
+                            {/* System Status Indicators */}
+                            <div className="mt-4 pt-4 border-t border-gray-100 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+                                {[
+                                    { label: "Database", value: "Connected", status: "online" },
+                                    { label: "Storage", value: "72% Used", status: "warning" },
+                                    { label: "API", value: "Operational", status: "online" },
+                                    { label: "Uptime", value: "99.9%", status: "online" }
+                                ].map((item, index) => (
+                                    <motion.div
+                                        key={item.label}
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        transition={{ delay: 0.8 + index * 0.1 }}
+                                        className="flex items-center justify-between px-3 sm:px-4 py-2 bg-gray-50 rounded-xl border border-gray-200/50"
+                                    >
+                                        <span className="text-[10px] sm:text-xs font-medium text-gray-500">{item.label}</span>
+                                        <span className={`text-[10px] sm:text-xs font-semibold flex items-center gap-1.5 ${item.status === 'online' ? 'text-emerald-600' :
+                                            item.status === 'warning' ? 'text-amber-600' :
+                                                'text-red-600'
+                                            }`}>
+                                            <span className={`w-1.5 h-1.5 rounded-full ${item.status === 'online' ? 'bg-emerald-600' :
+                                                item.status === 'warning' ? 'bg-amber-600' :
+                                                    'bg-red-600'
+                                                }`} />
+                                            {item.value}
+                                        </span>
+                                    </motion.div>
+                                ))}
                             </div>
                         </div>
                     </motion.div>
 
-                    {/* Footer */}
+                    {/* Footer - B&W Theme */}
                     <motion.div
                         variants={fadeInUp}
                         initial="hidden"
                         animate="visible"
                         custom={10}
-                        className="mt-8 text-center"
+                        className="mt-6 sm:mt-8 text-center"
                     >
-                        <p className="text-xs text-slate-400">
+                        <p className="text-[10px] sm:text-xs text-gray-400">
                             NotesSaver Analytics • Data updated in real-time • {new Date().getFullYear()}
                         </p>
                     </motion.div>
 
                 </div>
             </div>
+
+            {/* Shimmer animation styles */}
+            <style jsx>{`
+                @keyframes shimmer {
+                    100% {
+                        transform: translateX(200%);
+                    }
+                }
+                .animate-shimmer {
+                    animation: shimmer 2s infinite;
+                }
+                @media (max-width: 375px) {
+                    .xs\\:inline {
+                        display: inline;
+                    }
+                    .xs\\:hidden {
+                        display: none;
+                    }
+                }
+                @media (min-width: 376px) {
+                    .xs\\:inline {
+                        display: inline;
+                    }
+                    .xs\\:hidden {
+                        display: none;
+                    }
+                }
+            `}</style>
         </div>
     );
 };

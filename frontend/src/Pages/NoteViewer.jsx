@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import UserSidebar from "../Components/UserSidebar";
 import API from "../Services/api";
 
-// Animation variants
+// Enhanced animation variants
 const fadeInUp = {
     hidden: { opacity: 0, y: 20 },
     visible: (i = 0) => ({
@@ -46,7 +46,43 @@ const cardHover = {
     }
 };
 
-// Toast notification component with enhanced animations
+// Mobile menu button component - B&W Theme
+const MobileMenuButton = ({ showSidebar, setShowSidebar }) => (
+    <button
+        onClick={() => setShowSidebar(!showSidebar)}
+        className="lg:hidden fixed top-4 left-4 z-50 p-2.5 bg-white shadow-lg border border-gray-200 hover:bg-gray-50 transition-all rounded-xl"
+        aria-label="Toggle sidebar"
+    >
+        <div className="w-5 h-4 flex flex-col justify-between">
+            <motion.span
+                className="block w-full h-0.5 bg-gray-800 rounded-full"
+                animate={{
+                    rotate: showSidebar ? 45 : 0,
+                    y: showSidebar ? 6 : 0
+                }}
+                transition={{ duration: 0.3 }}
+            />
+            <motion.span
+                className="block w-full h-0.5 bg-gray-800 rounded-full"
+                animate={{
+                    opacity: showSidebar ? 0 : 1,
+                    scale: showSidebar ? 0 : 1
+                }}
+                transition={{ duration: 0.3 }}
+            />
+            <motion.span
+                className="block w-full h-0.5 bg-gray-800 rounded-full"
+                animate={{
+                    rotate: showSidebar ? -45 : 0,
+                    y: showSidebar ? -6 : 0
+                }}
+                transition={{ duration: 0.3 }}
+            />
+        </div>
+    </button>
+);
+
+// Enhanced Toast component - B&W Theme
 const Toast = ({ message, type, onClose }) => {
     useEffect(() => {
         const timer = setTimeout(onClose, 3000);
@@ -74,14 +110,14 @@ const Toast = ({ message, type, onClose }) => {
                 duration: 0.3,
                 ease: [0.22, 1, 0.36, 1]
             }}
-            className={`fixed top-4 right-4 z-50 px-6 py-4 rounded-2xl border shadow-lg max-w-sm ${bgColor[type] || bgColor.info}`}
+            className={`fixed top-4 right-4 z-50 px-4 sm:px-6 py-3 sm:py-4 rounded-2xl border shadow-lg max-w-[calc(100vw-2rem)] sm:max-w-sm mx-4 sm:mx-0 ${bgColor[type] || bgColor.info}`}
         >
             <div className="flex items-center gap-3">
-                <span className="text-lg">{iconMap[type] || "ℹ️"}</span>
-                <p className="text-sm font-medium">{message}</p>
+                <span className="text-lg flex-shrink-0">{iconMap[type] || "ℹ️"}</span>
+                <p className="text-xs sm:text-sm font-medium flex-1">{message}</p>
                 <button
                     onClick={onClose}
-                    className="ml-auto text-slate-400 hover:text-slate-600 transition-colors"
+                    className="ml-auto text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0"
                 >
                     ✕
                 </button>
@@ -99,14 +135,15 @@ const NoteViewer = () => {
     const [downloading, setDownloading] = useState(false);
     const [toast, setToast] = useState(null);
     const [error, setError] = useState(null);
+    const [showMobileSidebar, setShowMobileSidebar] = useState(false);
 
-    // Show toast
+    // EXACT SAME showToast - NO CHANGES
     const showToast = useCallback((message, type = "info") => {
         setToast({ message, type });
         setTimeout(() => setToast(null), 3000);
     }, []);
 
-    // Handle download
+    // EXACT SAME handleDownload - NO CHANGES
     const handleDownload = useCallback(async () => {
         if (downloading) return;
 
@@ -117,12 +154,10 @@ const NoteViewer = () => {
             if (response.data.success && response.data.fileUrl) {
                 let downloadUrl = response.data.fileUrl;
 
-                // Convert Cloudinary URL to force download
                 if (downloadUrl.includes('cloudinary.com')) {
                     downloadUrl = downloadUrl.replace('/upload/', '/upload/fl_attachment/');
                 }
 
-                // Create download link
                 const link = document.createElement('a');
                 link.href = downloadUrl;
                 link.download = response.data.title || 'download';
@@ -130,7 +165,6 @@ const NoteViewer = () => {
                 link.click();
                 document.body.removeChild(link);
 
-                // Update note state
                 setNote(prev => ({
                     ...prev,
                     downloads: (prev?.downloads || 0) + 1
@@ -151,6 +185,7 @@ const NoteViewer = () => {
         }
     }, [id, downloading, showToast]);
 
+    // EXACT SAME fetchNote - NO CHANGES
     useEffect(() => {
         const fetchNote = async () => {
             try {
@@ -168,6 +203,7 @@ const NoteViewer = () => {
         fetchNote();
     }, [id, showToast]);
 
+    // EXACT SAME handleReport - NO CHANGES
     const handleReport = async () => {
         const reason = prompt("Why are you reporting this note?");
         if (!reason) return;
@@ -190,43 +226,43 @@ const NoteViewer = () => {
         }
     };
 
-    // Loading skeleton with shimmer
+    // Enhanced Loading Skeleton - B&W Theme
     const LoadingSkeleton = () => (
-        <div className="flex min-h-screen bg-gradient-to-br from-[#F7F8FA] to-[#EEF0F4]">
+        <div className="flex min-h-screen bg-gray-50">
             <UserSidebar />
-            <div className="flex-1 overflow-y-auto">
-                <div className="max-w-7xl mx-auto px-6 py-10">
-                    <div className="space-y-6">
-                        <div className="h-8 bg-slate-200 rounded w-1/3 animate-pulse"></div>
-                        <div className="bg-white rounded-3xl border border-slate-200/80 p-8 overflow-hidden">
+            <div className="flex-1 overflow-y-auto w-full">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10">
+                    <div className="space-y-4 sm:space-y-6">
+                        <div className="h-6 sm:h-8 bg-gray-200 rounded w-1/2 sm:w-1/3 animate-pulse"></div>
+                        <div className="bg-white rounded-xl sm:rounded-3xl border border-gray-200 p-4 sm:p-8 overflow-hidden">
                             <div className="relative">
-                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-slate-100/50 to-transparent -translate-x-full animate-shimmer"></div>
-                                <div className="flex flex-col md:flex-row gap-6">
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-gray-100/50 to-transparent -translate-x-full animate-shimmer"></div>
+                                <div className="flex flex-col md:flex-row gap-4 sm:gap-6">
                                     <div className="flex-1">
-                                        <div className="h-10 bg-slate-200 rounded w-3/4 mb-3"></div>
-                                        <div className="h-4 bg-slate-200 rounded w-1/2 mb-2"></div>
-                                        <div className="flex gap-2">
-                                            <div className="h-6 bg-slate-200 rounded w-20"></div>
-                                            <div className="h-6 bg-slate-200 rounded w-24"></div>
+                                        <div className="h-8 sm:h-10 bg-gray-200 rounded w-3/4 mb-3"></div>
+                                        <div className="h-3 sm:h-4 bg-gray-200 rounded w-1/2 mb-2"></div>
+                                        <div className="flex flex-wrap gap-2">
+                                            <div className="h-5 sm:h-6 bg-gray-200 rounded w-16 sm:w-20"></div>
+                                            <div className="h-5 sm:h-6 bg-gray-200 rounded w-20 sm:w-24"></div>
                                         </div>
                                     </div>
                                     <div className="flex-shrink-0">
-                                        <div className="w-12 h-12 bg-slate-200 rounded-full"></div>
+                                        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-200 rounded-full"></div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                             {[...Array(4)].map((_, i) => (
-                                <div key={i} className="bg-white rounded-2xl border border-slate-200/80 p-5 animate-pulse">
-                                    <div className="h-4 bg-slate-200 rounded w-1/2 mb-2"></div>
-                                    <div className="h-6 bg-slate-200 rounded w-2/3"></div>
+                                <div key={i} className="bg-white rounded-xl sm:rounded-2xl border border-gray-200 p-4 sm:p-5 animate-pulse">
+                                    <div className="h-3 sm:h-4 bg-gray-200 rounded w-1/2 mb-2"></div>
+                                    <div className="h-5 sm:h-6 bg-gray-200 rounded w-2/3"></div>
                                 </div>
                             ))}
                         </div>
-                        <div className="bg-white rounded-3xl border border-slate-200/80 p-6 animate-pulse">
-                            <div className="h-8 bg-slate-200 rounded w-1/4 mb-4"></div>
-                            <div className="h-96 bg-slate-200 rounded-2xl"></div>
+                        <div className="bg-white rounded-xl sm:rounded-3xl border border-gray-200 p-4 sm:p-6 animate-pulse">
+                            <div className="h-6 sm:h-8 bg-gray-200 rounded w-1/3 sm:w-1/4 mb-4"></div>
+                            <div className="h-64 sm:h-96 bg-gray-200 rounded-xl sm:rounded-2xl"></div>
                         </div>
                     </div>
                 </div>
@@ -234,9 +270,9 @@ const NoteViewer = () => {
         </div>
     );
 
-    // Empty state with animation
+    // Enhanced Empty State - B&W Theme
     const EmptyState = () => (
-        <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-[#F7F8FA] to-[#EEF0F4]">
+        <div className="flex items-center justify-center min-h-screen bg-gray-50 px-4">
             <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -257,17 +293,17 @@ const NoteViewer = () => {
                         repeat: Infinity,
                         ease: "easeInOut"
                     }}
-                    className="w-24 h-24 rounded-3xl bg-slate-100 flex items-center justify-center mx-auto mb-6"
+                    className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl sm:rounded-3xl bg-gray-100 flex items-center justify-center mx-auto mb-4 sm:mb-6"
                 >
-                    <span className="text-5xl">📄</span>
+                    <span className="text-4xl sm:text-5xl">📄</span>
                 </motion.div>
-                <h2 className="text-2xl font-bold text-slate-800 mb-2">Note Not Found</h2>
-                <p className="text-slate-500">The note you're looking for doesn't exist or has been removed.</p>
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">Note Not Found</h2>
+                <p className="text-xs sm:text-sm text-gray-500">The note you're looking for doesn't exist or has been removed.</p>
                 <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => window.history.back()}
-                    className="mt-4 px-6 py-2 bg-indigo-600 text-white rounded-xl text-sm font-medium hover:bg-indigo-700 transition-colors"
+                    className="mt-4 px-5 sm:px-6 py-2 bg-gray-800 hover:bg-gray-900 text-white rounded-xl text-sm font-medium transition-all shadow-lg"
                 >
                     Go Back
                 </motion.button>
@@ -291,23 +327,23 @@ const NoteViewer = () => {
     const isDoc = fileType.includes("wordprocessingml") || fileUrl.includes(".docx");
     const isPpt = fileType.includes("presentationml") || fileUrl.includes(".pptx");
 
-    // Format file size
+    // EXACT SAME formatFileSize - NO CHANGES
     const formatFileSize = (bytes) => {
         if (!bytes) return "0 MB";
         const mb = bytes / (1024 * 1024);
         return mb < 1 ? `${(bytes / 1024).toFixed(0)} KB` : `${mb.toFixed(2)} MB`;
     };
 
-    // Get file icon with color
+    // EXACT SAME getFileIcon - NO CHANGES (B&W Theme)
     const getFileIcon = () => {
-        if (isPdf) return { icon: "📄", color: "bg-red-50 text-red-600" };
-        if (isImage) return { icon: "🖼️", color: "bg-green-50 text-green-600" };
-        if (isDoc) return { icon: "📝", color: "bg-blue-50 text-blue-600" };
-        if (isPpt) return { icon: "📊", color: "bg-orange-50 text-orange-600" };
-        return { icon: "📁", color: "bg-slate-50 text-slate-600" };
+        if (isPdf) return { icon: "📄", color: "bg-gray-100 text-gray-700" };
+        if (isImage) return { icon: "🖼️", color: "bg-gray-100 text-gray-700" };
+        if (isDoc) return { icon: "📝", color: "bg-gray-100 text-gray-700" };
+        if (isPpt) return { icon: "📊", color: "bg-gray-100 text-gray-700" };
+        return { icon: "📁", color: "bg-gray-100 text-gray-700" };
     };
 
-    // Get file type label
+    // EXACT SAME getFileTypeLabel - NO CHANGES
     const getFileTypeLabel = () => {
         if (isPdf) return "PDF Document";
         if (isImage) return "Image";
@@ -319,8 +355,34 @@ const NoteViewer = () => {
     const fileIcon = getFileIcon();
 
     return (
-        <div className="flex min-h-screen bg-gradient-to-br from-[#F7F8FA] to-[#EEF0F4]">
-            <UserSidebar />
+        <div className="flex min-h-screen bg-gray-50 relative">
+            {/* Mobile Sidebar Overlay */}
+            <AnimatePresence>
+                {showMobileSidebar && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={() => setShowMobileSidebar(false)}
+                        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
+                    />
+                )}
+            </AnimatePresence>
+
+            {/* Mobile Sidebar */}
+            <motion.div
+                initial={{ x: -300 }}
+                animate={{ x: showMobileSidebar ? 0 : -300 }}
+                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                className="fixed left-0 top-0 bottom-0 w-72 bg-white z-50 lg:hidden shadow-2xl"
+            >
+                <UserSidebar />
+            </motion.div>
+
+            {/* Desktop Sidebar */}
+            <div className="hidden lg:block">
+                <UserSidebar />
+            </div>
 
             {/* Toast */}
             <AnimatePresence>
@@ -333,23 +395,30 @@ const NoteViewer = () => {
                 )}
             </AnimatePresence>
 
-            <div className="flex-1 overflow-y-auto">
-                <div className="max-w-7xl mx-auto px-6 py-10">
+            {/* Main Content */}
+            <div className="flex-1 overflow-y-auto w-full">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10">
 
-                    {/* Error Message */}
+                    {/* Mobile Menu Button */}
+                    <MobileMenuButton
+                        showSidebar={showMobileSidebar}
+                        setShowSidebar={setShowMobileSidebar}
+                    />
+
+                    {/* Error Message - B&W Theme */}
                     <AnimatePresence>
                         {error && (
                             <motion.div
                                 initial={{ opacity: 0, y: -10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: -10 }}
-                                className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-4 flex items-center gap-2"
+                                className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-4 flex items-center gap-2 text-xs sm:text-sm"
                             >
-                                <span className="text-lg">⚠️</span>
-                                <span className="text-sm">{error}</span>
+                                <span className="text-base sm:text-lg flex-shrink-0">⚠️</span>
+                                <span className="flex-1">{error}</span>
                                 <button
                                     onClick={() => setError(null)}
-                                    className="ml-auto text-red-500 hover:text-red-700 transition-colors"
+                                    className="text-red-500 hover:text-red-700 transition-colors p-1 flex-shrink-0"
                                 >
                                     ✕
                                 </button>
@@ -357,13 +426,13 @@ const NoteViewer = () => {
                         )}
                     </AnimatePresence>
 
-                    {/* Hero Header with enhanced animations */}
+                    {/* Hero Header - B&W SaaS Style */}
                     <motion.div
                         variants={fadeInUp}
                         initial="hidden"
                         animate="visible"
                         custom={0}
-                        className="relative overflow-hidden bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-700 rounded-3xl shadow-2xl mb-8"
+                        className="relative overflow-hidden bg-gradient-to-br from-gray-800 via-gray-900 to-black rounded-xl sm:rounded-2xl lg:rounded-3xl shadow-2xl mb-6 sm:mb-8 mt-12 lg:mt-0"
                     >
                         {/* Animated background particles */}
                         <motion.div
@@ -376,7 +445,7 @@ const NoteViewer = () => {
                                 repeat: Infinity,
                                 ease: "linear"
                             }}
-                            className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl"
+                            className="absolute top-0 right-0 w-40 sm:w-48 md:w-64 h-40 sm:h-48 md:h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl"
                         />
                         <motion.div
                             animate={{
@@ -389,32 +458,35 @@ const NoteViewer = () => {
                                 ease: "linear",
                                 delay: 2
                             }}
-                            className="absolute bottom-0 left-0 w-48 h-48 bg-purple-500/10 rounded-full translate-y-1/2 -translate-x-1/2 blur-2xl"
+                            className="absolute bottom-0 left-0 w-32 sm:w-40 md:w-48 h-32 sm:h-40 md:h-48 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2 blur-2xl"
                         />
 
-                        <div className="relative px-8 py-8">
-                            <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
+                        <div className="relative px-4 sm:px-6 lg:px-8 py-6 sm:py-7 lg:py-8">
+                            <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4 sm:gap-6">
                                 <div className="flex-1">
-                                    <div className="flex flex-wrap items-center gap-2 mb-3">
+                                    <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3">
                                         <motion.span
                                             whileHover={{ scale: 1.05 }}
-                                            className={`inline-flex items-center gap-1.5 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-medium border border-white/10 ${fileIcon.color.replace('text-', 'text-white/')}`}
+                                            className={`inline-flex items-center gap-1 sm:gap-1.5 backdrop-blur-sm text-white px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium border border-white/10 ${fileIcon.color.replace('text-', 'text-white/')}`}
                                         >
-                                            <span className="text-base">{fileIcon.icon}</span>
-                                            <span>{getFileTypeLabel()}</span>
+                                            <span className="text-sm sm:text-base">{fileIcon.icon}</span>
+                                            <span className="hidden xs:inline">{getFileTypeLabel()}</span>
+                                            <span className="xs:hidden">{getFileTypeLabel().split(' ')[0]}</span>
                                         </motion.span>
                                         <motion.span
                                             whileHover={{ scale: 1.05 }}
-                                            className="inline-flex items-center gap-1.5 bg-emerald-500/20 text-emerald-100 px-3 py-1 rounded-full text-xs font-medium border border-emerald-500/20"
+                                            className="inline-flex items-center gap-1 sm:gap-1.5 bg-emerald-500/20 text-emerald-100 px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium border border-emerald-500/20"
                                         >
-                                            {note.category?.icon || "📂"} {note.category?.name || "General"}
+                                            {note.category?.icon || "📂"}
+                                            <span className="hidden xs:inline">{note.category?.name || "General"}</span>
+                                            <span className="xs:hidden">{note.category?.name?.slice(0, 6) || "Gen"}</span>
                                         </motion.span>
                                     </div>
                                     <motion.h1
                                         initial={{ x: -20, opacity: 0 }}
                                         animate={{ x: 0, opacity: 1 }}
                                         transition={{ delay: 0.3 }}
-                                        className="text-3xl md:text-4xl font-bold text-white leading-tight mb-2"
+                                        className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white leading-tight mb-1 sm:mb-2"
                                     >
                                         {note.title}
                                     </motion.h1>
@@ -422,26 +494,26 @@ const NoteViewer = () => {
                                         initial={{ x: -20, opacity: 0 }}
                                         animate={{ x: 0, opacity: 1 }}
                                         transition={{ delay: 0.4 }}
-                                        className="text-indigo-200 text-sm"
+                                        className="text-gray-300 text-xs sm:text-sm"
                                     >
                                         Subject: {note.subject}
                                     </motion.p>
-                                    <div className="flex flex-wrap items-center gap-4 mt-3">
+                                    <div className="flex flex-wrap items-center gap-2 sm:gap-4 mt-2 sm:mt-3">
                                         <div className="flex items-center gap-2">
                                             <motion.div
                                                 whileHover={{ scale: 1.1 }}
-                                                className="w-8 h-8 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white text-xs font-semibold"
+                                                className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white text-[10px] sm:text-xs font-semibold"
                                             >
                                                 {note.owner?.name?.[0]?.toUpperCase() || "U"}
                                             </motion.div>
-                                            <span className="text-white/80 text-sm">
+                                            <span className="text-white/80 text-xs sm:text-sm truncate max-w-[100px] sm:max-w-none">
                                                 {note.owner?.name || "Unknown"}
                                             </span>
                                         </div>
-                                        <span className="text-white/40 text-sm">•</span>
-                                        <span className="text-white/60 text-sm">
+                                        <span className="text-white/40 text-[10px] sm:text-sm">•</span>
+                                        <span className="text-white/60 text-[10px] sm:text-sm">
                                             {new Date(note.createdAt).toLocaleDateString('en-US', {
-                                                month: 'long',
+                                                month: 'short',
                                                 day: 'numeric',
                                                 year: 'numeric'
                                             })}
@@ -452,18 +524,18 @@ const NoteViewer = () => {
                         </div>
                     </motion.div>
 
-                    {/* Statistics Cards */}
+                    {/* Statistics Cards - B&W Theme */}
                     <motion.div
                         variants={containerVariants}
                         initial="hidden"
                         animate="visible"
-                        className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"
+                        className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8"
                     >
                         {[
-                            { label: "Views", value: note.views || 0, icon: "👁️", color: "indigo" },
-                            { label: "Downloads", value: note.downloads || 0, icon: "⬇️", color: "emerald" },
-                            { label: "File Type", value: getFileTypeLabel(), icon: "📋", color: "violet" },
-                            { label: "File Size", value: formatFileSize(note.fileSize), icon: "📦", color: "amber" }
+                            { label: "Views", value: note.views || 0, icon: "👁️" },
+                            { label: "Downloads", value: note.downloads || 0, icon: "⬇️" },
+                            { label: "File Type", value: getFileTypeLabel(), icon: "📋" },
+                            { label: "File Size", value: formatFileSize(note.fileSize), icon: "📦" }
                         ].map((stat, index) => (
                             <motion.div
                                 key={stat.label}
@@ -472,14 +544,14 @@ const NoteViewer = () => {
                                 {...cardHover}
                                 whileHover="hover"
                                 whileTap="tap"
-                                className="bg-white rounded-2xl border border-slate-200/80 shadow-[0_1px_4px_0_rgba(0,0,0,0.06)] p-5 hover:shadow-xl transition-all duration-300 cursor-pointer"
+                                className="bg-white rounded-xl sm:rounded-2xl border border-gray-200 shadow-sm p-4 sm:p-5 hover:shadow-lg transition-all duration-300 cursor-pointer"
                             >
-                                <div className="flex items-center justify-between mb-2">
-                                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{stat.label}</p>
+                                <div className="flex items-center justify-between mb-1 sm:mb-2">
+                                    <p className="text-[10px] sm:text-xs font-semibold uppercase tracking-wide text-gray-500 truncate">{stat.label}</p>
                                     <motion.span
                                         whileHover={{ rotate: 360, scale: 1.1 }}
                                         transition={{ duration: 0.5 }}
-                                        className="text-xl"
+                                        className="text-base sm:text-xl flex-shrink-0"
                                     >
                                         {stat.icon}
                                     </motion.span>
@@ -492,7 +564,7 @@ const NoteViewer = () => {
                                         type: "spring",
                                         stiffness: 300
                                     }}
-                                    className={`text-2xl font-bold text-${stat.color}-600`}
+                                    className="text-base sm:text-lg lg:text-2xl font-bold text-gray-800 truncate"
                                 >
                                     {stat.value}
                                 </motion.p>
@@ -500,54 +572,54 @@ const NoteViewer = () => {
                         ))}
                     </motion.div>
 
-                    {/* File Preview */}
+                    {/* File Preview - B&W Theme */}
                     <motion.div
                         variants={fadeInUp}
                         initial="hidden"
                         animate="visible"
                         custom={5}
-                        className="bg-white rounded-3xl border border-slate-200/80 shadow-[0_1px_4px_0_rgba(0,0,0,0.06)] overflow-hidden hover:shadow-lg transition-all duration-300 mb-8"
+                        className="bg-white rounded-xl sm:rounded-2xl lg:rounded-3xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-lg transition-all duration-300 mb-6 sm:mb-8"
                     >
-                        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
-                            <div className="flex items-center gap-3">
+                        <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-100 flex flex-wrap items-center justify-between gap-2">
+                            <div className="flex items-center gap-2 sm:gap-3">
                                 <motion.div
                                     whileHover={{ rotate: 180 }}
                                     transition={{ duration: 0.5 }}
-                                    className="w-8 h-8 rounded-xl bg-indigo-50 flex items-center justify-center"
+                                    className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-gray-100 flex items-center justify-center flex-shrink-0"
                                 >
-                                    <svg className="w-4 h-4 text-indigo-600" viewBox="0 0 16 16" fill="none">
+                                    <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-600" viewBox="0 0 16 16" fill="none">
                                         <rect x="1.5" y="1.5" width="13" height="13" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
                                         <path d="M5 5h6M5 8h4M5 11h3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                                     </svg>
                                 </motion.div>
-                                <h2 className="text-sm font-semibold text-slate-800">File Preview</h2>
+                                <h2 className="text-xs sm:text-sm font-semibold text-gray-800">File Preview</h2>
                             </div>
-                            <span className="text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded-full">
+                            <span className="text-[10px] sm:text-xs text-gray-400 bg-gray-100 px-2 py-0.5 sm:py-1 rounded-full">
                                 {getFileTypeLabel()}
                             </span>
                         </div>
 
-                        <div className="p-6">
+                        <div className="p-3 sm:p-4 lg:p-6">
                             <AnimatePresence mode="wait">
                                 {previewLoading && (
                                     <motion.div
                                         initial={{ opacity: 0 }}
                                         animate={{ opacity: 1 }}
                                         exit={{ opacity: 0 }}
-                                        className="flex items-center justify-center py-20"
+                                        className="flex items-center justify-center py-12 sm:py-20"
                                     >
                                         <div className="flex flex-col items-center gap-4">
-                                            <svg className="animate-spin w-8 h-8 text-indigo-600" viewBox="0 0 24 24" fill="none">
+                                            <svg className="animate-spin w-6 h-6 sm:w-8 sm:h-8 text-gray-600" viewBox="0 0 24 24" fill="none">
                                                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
                                                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l3-3-3-3V4a10 10 0 100 10h-2a8 8 0 01-8-8z" />
                                             </svg>
-                                            <p className="text-sm text-slate-500">Loading preview...</p>
+                                            <p className="text-xs sm:text-sm text-gray-500">Loading preview...</p>
                                         </div>
                                     </motion.div>
                                 )}
                             </AnimatePresence>
 
-                            <div className="rounded-2xl overflow-hidden bg-slate-50 border border-slate-200/60 min-h-[400px]">
+                            <div className="rounded-xl sm:rounded-2xl overflow-hidden bg-gray-50 border border-gray-200/60 min-h-[250px] sm:min-h-[400px]">
                                 {isPdf && (
                                     <iframe
                                         src={`https://docs.google.com/gview?embedded=true&url=${encodeURIComponent(
@@ -555,8 +627,8 @@ const NoteViewer = () => {
                                         )}`}
                                         title="PDF Viewer"
                                         width="100%"
-                                        height="700"
-                                        className="border-0"
+                                        height="500"
+                                        className="border-0 min-h-[400px] sm:min-h-[500px]"
                                         onLoad={() => setPreviewLoading(false)}
                                     />
                                 )}
@@ -565,7 +637,7 @@ const NoteViewer = () => {
                                     <img
                                         src={note.fileUrl}
                                         alt={note.title}
-                                        className="w-full object-contain max-h-[700px]"
+                                        className="w-full object-contain max-h-[400px] sm:max-h-[700px]"
                                         onLoad={() => setPreviewLoading(false)}
                                     />
                                 )}
@@ -577,8 +649,8 @@ const NoteViewer = () => {
                                         )}`}
                                         title="DOCX Viewer"
                                         width="100%"
-                                        height="700"
-                                        className="border-0"
+                                        height="500"
+                                        className="border-0 min-h-[400px] sm:min-h-[500px]"
                                         onLoad={() => setPreviewLoading(false)}
                                     />
                                 )}
@@ -590,14 +662,14 @@ const NoteViewer = () => {
                                         )}`}
                                         title="PPTX Viewer"
                                         width="100%"
-                                        height="700"
-                                        className="border-0"
+                                        height="500"
+                                        className="border-0 min-h-[400px] sm:min-h-[500px]"
                                         onLoad={() => setPreviewLoading(false)}
                                     />
                                 )}
 
                                 {!isPdf && !isImage && !isDoc && !isPpt && (
-                                    <div className="flex flex-col items-center justify-center py-20">
+                                    <div className="flex flex-col items-center justify-center py-12 sm:py-20 px-4">
                                         <motion.div
                                             animate={{
                                                 scale: [1, 1.1, 1],
@@ -608,17 +680,17 @@ const NoteViewer = () => {
                                                 repeat: Infinity,
                                                 ease: "easeInOut"
                                             }}
-                                            className="w-24 h-24 rounded-3xl bg-slate-100 flex items-center justify-center mb-4"
+                                            className="w-16 h-16 sm:w-24 sm:h-24 rounded-2xl sm:rounded-3xl bg-gray-100 flex items-center justify-center mb-3 sm:mb-4"
                                         >
-                                            <span className="text-5xl">📄</span>
+                                            <span className="text-3xl sm:text-5xl">📄</span>
                                         </motion.div>
-                                        <h3 className="text-lg font-semibold text-slate-800 mb-2">Preview Not Available</h3>
-                                        <p className="text-sm text-slate-500">This file type cannot be previewed in the browser.</p>
+                                        <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-1 sm:mb-2">Preview Not Available</h3>
+                                        <p className="text-xs sm:text-sm text-gray-500 text-center">This file type cannot be previewed in the browser.</p>
                                         <motion.button
                                             whileHover={{ scale: 1.05 }}
                                             whileTap={{ scale: 0.95 }}
                                             onClick={handleDownload}
-                                            className="mt-4 px-6 py-2 bg-emerald-600 text-white rounded-xl text-sm font-medium hover:bg-emerald-700 transition-colors"
+                                            className="mt-3 sm:mt-4 px-4 sm:px-6 py-1.5 sm:py-2 bg-gray-800 hover:bg-gray-900 text-white rounded-xl text-xs sm:text-sm font-medium transition-all shadow-lg"
                                         >
                                             Download File
                                         </motion.button>
@@ -628,32 +700,33 @@ const NoteViewer = () => {
                         </div>
                     </motion.div>
 
-                    {/* Action Bar */}
+                    {/* Action Bar - B&W Theme */}
                     <motion.div
                         variants={fadeInUp}
                         initial="hidden"
                         animate="visible"
                         custom={6}
-                        className="flex flex-wrap gap-4 mb-8"
+                        className="flex flex-wrap gap-2 sm:gap-4 mb-6 sm:mb-8"
                     >
                         <motion.button
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                             onClick={handleDownload}
                             disabled={downloading}
-                            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white rounded-xl text-sm font-medium transition-all shadow-lg hover:shadow-emerald-200/50 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="flex-1 sm:flex-none items-center justify-center gap-1.5 sm:gap-2 px-4 sm:px-6 py-2.5 sm:py-3 bg-gray-800 hover:bg-gray-900 text-white rounded-xl text-xs sm:text-sm font-medium transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed inline-flex"
                         >
                             {downloading ? (
                                 <>
-                                    <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                                    <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-spin" viewBox="0 0 24 24" fill="none">
                                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
                                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l3-3-3-3V4a10 10 0 100 10h-2a8 8 0 01-8-8z" />
                                     </svg>
-                                    Downloading...
+                                    <span className="hidden xs:inline">Downloading...</span>
+                                    <span className="xs:hidden">DL...</span>
                                 </>
                             ) : (
                                 <>
-                                    <svg className="w-4 h-4" viewBox="0 0 16 16" fill="none">
+                                    <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" viewBox="0 0 16 16" fill="none">
                                         <path d="M8 10V1M5 4l3-3 3 3M2 12v1.5A1.5 1.5 0 003.5 15h9a1.5 1.5 0 001.5-1.5V12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                                     </svg>
                                     Download File
@@ -667,12 +740,13 @@ const NoteViewer = () => {
                             href={note.fileUrl}
                             target="_blank"
                             rel="noreferrer"
-                            className="flex items-center gap-2 px-6 py-3 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-sm font-medium transition-all shadow-lg hover:shadow-slate-200/50"
+                            className="flex-1 sm:flex-none items-center justify-center gap-1.5 sm:gap-2 px-4 sm:px-6 py-2.5 sm:py-3 bg-gray-700 hover:bg-gray-800 text-white rounded-xl text-xs sm:text-sm font-medium transition-all shadow-lg inline-flex"
                         >
-                            <svg className="w-4 h-4" viewBox="0 0 16 16" fill="none">
+                            <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" viewBox="0 0 16 16" fill="none">
                                 <path d="M2 4h12M6 12l4-4-4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                             </svg>
-                            Open in New Tab
+                            <span className="hidden xs:inline">Open in New Tab</span>
+                            <span className="xs:hidden">Open</span>
                         </motion.a>
 
                         <motion.button
@@ -680,9 +754,9 @@ const NoteViewer = () => {
                             whileTap={{ scale: 0.95 }}
                             onClick={handleReport}
                             disabled={reportLoading}
-                            className="flex items-center gap-2 px-6 py-3 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl text-sm font-medium transition-all disabled:opacity-50 shadow-lg hover:shadow-red-200/50"
+                            className="flex-1 sm:flex-none items-center justify-center gap-1.5 sm:gap-2 px-4 sm:px-6 py-2.5 sm:py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-xs sm:text-sm font-medium transition-all disabled:opacity-50 shadow-lg inline-flex"
                         >
-                            <svg className="w-4 h-4" viewBox="0 0 16 16" fill="none">
+                            <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" viewBox="0 0 16 16" fill="none">
                                 <circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.5" />
                                 <path d="M8 4v4M8 11v1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                             </svg>
@@ -690,109 +764,109 @@ const NoteViewer = () => {
                         </motion.button>
                     </motion.div>
 
-                    {/* Note Details & Activity */}
-                    <div className="grid lg:grid-cols-2 gap-6">
+                    {/* Note Details & Activity - B&W Theme */}
+                    <div className="grid lg:grid-cols-2 gap-4 sm:gap-6">
                         {/* Note Details */}
                         <motion.div
                             variants={fadeInUp}
                             initial="hidden"
                             animate="visible"
                             custom={7}
-                            className="bg-white rounded-2xl border border-slate-200/80 shadow-[0_1px_4px_0_rgba(0,0,0,0.06)] overflow-hidden hover:shadow-lg transition-all duration-300"
+                            className="bg-white rounded-xl sm:rounded-2xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-lg transition-all duration-300"
                         >
-                            <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+                            <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-100 flex items-center gap-2 sm:gap-3">
                                 <motion.div
                                     whileHover={{ rotate: 180 }}
                                     transition={{ duration: 0.5 }}
-                                    className="w-8 h-8 rounded-xl bg-indigo-50 flex items-center justify-center"
+                                    className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-gray-100 flex items-center justify-center flex-shrink-0"
                                 >
-                                    <svg className="w-4 h-4 text-indigo-600" viewBox="0 0 16 16" fill="none">
+                                    <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-600" viewBox="0 0 16 16" fill="none">
                                         <path d="M2 3.5h12M2 8h8M2 12.5h6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                                         <rect x="0.5" y="0.5" width="15" height="15" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
                                     </svg>
                                 </motion.div>
-                                <h2 className="text-sm font-semibold text-slate-800">Note Details</h2>
+                                <h2 className="text-xs sm:text-sm font-semibold text-gray-800">Note Details</h2>
                             </div>
 
-                            <div className="px-6 py-5">
-                                <div className="grid gap-4">
-                                    <div className="grid grid-cols-2 gap-3">
+                            <div className="px-4 sm:px-6 py-4 sm:py-5">
+                                <div className="grid gap-3 sm:gap-4">
+                                    <div className="grid grid-cols-2 gap-2 sm:gap-3">
                                         <div>
-                                            <label className="block text-xs font-medium text-slate-500 uppercase tracking-wide">Title</label>
-                                            <p className="text-sm font-medium text-slate-800 mt-1">{note.title}</p>
+                                            <label className="block text-[10px] sm:text-xs font-medium text-gray-500 uppercase tracking-wide">Title</label>
+                                            <p className="text-xs sm:text-sm font-medium text-gray-800 mt-0.5 sm:mt-1 break-words">{note.title}</p>
                                         </div>
                                         <div>
-                                            <label className="block text-xs font-medium text-slate-500 uppercase tracking-wide">Subject</label>
-                                            <p className="text-sm font-medium text-slate-800 mt-1">{note.subject}</p>
-                                        </div>
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-3">
-                                        <div>
-                                            <label className="block text-xs font-medium text-slate-500 uppercase tracking-wide">Category</label>
-                                            <p className="text-sm font-medium text-slate-800 mt-1">{note.category?.name || "General"}</p>
-                                        </div>
-                                        <div>
-                                            <label className="block text-xs font-medium text-slate-500 uppercase tracking-wide">Owner</label>
-                                            <p className="text-sm font-medium text-slate-800 mt-1">{note.owner?.name || "Unknown"}</p>
+                                            <label className="block text-[10px] sm:text-xs font-medium text-gray-500 uppercase tracking-wide">Subject</label>
+                                            <p className="text-xs sm:text-sm font-medium text-gray-800 mt-0.5 sm:mt-1 break-words">{note.subject}</p>
                                         </div>
                                     </div>
-                                    <div className="grid grid-cols-2 gap-3">
+                                    <div className="grid grid-cols-2 gap-2 sm:gap-3">
                                         <div>
-                                            <label className="block text-xs font-medium text-slate-500 uppercase tracking-wide">Upload Date</label>
-                                            <p className="text-sm font-medium text-slate-800 mt-1">
+                                            <label className="block text-[10px] sm:text-xs font-medium text-gray-500 uppercase tracking-wide">Category</label>
+                                            <p className="text-xs sm:text-sm font-medium text-gray-800 mt-0.5 sm:mt-1 break-words">{note.category?.name || "General"}</p>
+                                        </div>
+                                        <div>
+                                            <label className="block text-[10px] sm:text-xs font-medium text-gray-500 uppercase tracking-wide">Owner</label>
+                                            <p className="text-xs sm:text-sm font-medium text-gray-800 mt-0.5 sm:mt-1 break-words">{note.owner?.name || "Unknown"}</p>
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-2 sm:gap-3">
+                                        <div>
+                                            <label className="block text-[10px] sm:text-xs font-medium text-gray-500 uppercase tracking-wide">Upload Date</label>
+                                            <p className="text-xs sm:text-sm font-medium text-gray-800 mt-0.5 sm:mt-1">
                                                 {new Date(note.createdAt).toLocaleDateString('en-US', {
-                                                    month: 'long',
+                                                    month: 'short',
                                                     day: 'numeric',
                                                     year: 'numeric'
                                                 })}
                                             </p>
                                         </div>
                                         <div>
-                                            <label className="block text-xs font-medium text-slate-500 uppercase tracking-wide">File Type</label>
-                                            <p className="text-sm font-medium text-slate-800 mt-1">{getFileTypeLabel()}</p>
+                                            <label className="block text-[10px] sm:text-xs font-medium text-gray-500 uppercase tracking-wide">File Type</label>
+                                            <p className="text-xs sm:text-sm font-medium text-gray-800 mt-0.5 sm:mt-1">{getFileTypeLabel()}</p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </motion.div>
 
-                        {/* Activity Timeline */}
+                        {/* Activity Timeline - B&W Theme */}
                         <motion.div
                             variants={fadeInUp}
                             initial="hidden"
                             animate="visible"
                             custom={8}
-                            className="bg-white rounded-2xl border border-slate-200/80 shadow-[0_1px_4px_0_rgba(0,0,0,0.06)] overflow-hidden hover:shadow-lg transition-all duration-300"
+                            className="bg-white rounded-xl sm:rounded-2xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-lg transition-all duration-300"
                         >
-                            <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+                            <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-100 flex items-center gap-2 sm:gap-3">
                                 <motion.div
                                     whileHover={{ rotate: 180 }}
                                     transition={{ duration: 0.5 }}
-                                    className="w-8 h-8 rounded-xl bg-violet-50 flex items-center justify-center"
+                                    className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-gray-100 flex items-center justify-center flex-shrink-0"
                                 >
-                                    <svg className="w-4 h-4 text-violet-600" viewBox="0 0 16 16" fill="none">
+                                    <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-600" viewBox="0 0 16 16" fill="none">
                                         <circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.5" />
                                         <path d="M8 4v4l2 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                                     </svg>
                                 </motion.div>
-                                <h2 className="text-sm font-semibold text-slate-800">Activity</h2>
+                                <h2 className="text-xs sm:text-sm font-semibold text-gray-800">Activity</h2>
                             </div>
 
-                            <div className="px-6 py-5">
-                                <div className="space-y-4">
-                                    <div className="flex items-start gap-4">
+                            <div className="px-4 sm:px-6 py-4 sm:py-5">
+                                <div className="space-y-3 sm:space-y-4">
+                                    <div className="flex items-start gap-3 sm:gap-4">
                                         <div className="relative flex-shrink-0">
                                             <motion.div
                                                 whileHover={{ scale: 1.1 }}
-                                                className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center"
+                                                className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gray-100 flex items-center justify-center"
                                             >
-                                                <span className="text-lg">📤</span>
+                                                <span className="text-base sm:text-lg">📤</span>
                                             </motion.div>
-                                            <div className="absolute top-10 left-1/2 w-0.5 h-12 -translate-x-1/2 bg-slate-200"></div>
+                                            <div className="absolute top-8 sm:top-10 left-1/2 w-0.5 h-8 sm:h-12 -translate-x-1/2 bg-gray-200"></div>
                                         </div>
                                         <div className="flex-1 pt-0.5">
-                                            <p className="text-sm font-semibold text-slate-800">Uploaded Successfully</p>
-                                            <p className="text-xs text-slate-400 mt-0.5">
+                                            <p className="text-xs sm:text-sm font-semibold text-gray-800">Uploaded Successfully</p>
+                                            <p className="text-[10px] sm:text-xs text-gray-400 mt-0.5">
                                                 {new Date(note.createdAt).toLocaleDateString('en-US', {
                                                     month: 'short',
                                                     day: 'numeric',
@@ -802,34 +876,34 @@ const NoteViewer = () => {
                                         </div>
                                     </div>
 
-                                    <div className="flex items-start gap-4">
+                                    <div className="flex items-start gap-3 sm:gap-4">
                                         <div className="relative flex-shrink-0">
                                             <motion.div
                                                 whileHover={{ scale: 1.1 }}
-                                                className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center"
+                                                className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gray-100 flex items-center justify-center"
                                             >
-                                                <span className="text-lg">👁️</span>
+                                                <span className="text-base sm:text-lg">👁️</span>
                                             </motion.div>
-                                            <div className="absolute top-10 left-1/2 w-0.5 h-12 -translate-x-1/2 bg-slate-200"></div>
+                                            <div className="absolute top-8 sm:top-10 left-1/2 w-0.5 h-8 sm:h-12 -translate-x-1/2 bg-gray-200"></div>
                                         </div>
                                         <div className="flex-1 pt-0.5">
-                                            <p className="text-sm font-semibold text-slate-800">Viewed {note.views || 0} times</p>
-                                            <p className="text-xs text-slate-400 mt-0.5">Total views</p>
+                                            <p className="text-xs sm:text-sm font-semibold text-gray-800">Viewed {note.views || 0} times</p>
+                                            <p className="text-[10px] sm:text-xs text-gray-400 mt-0.5">Total views</p>
                                         </div>
                                     </div>
 
-                                    <div className="flex items-start gap-4">
+                                    <div className="flex items-start gap-3 sm:gap-4">
                                         <div className="flex-shrink-0">
                                             <motion.div
                                                 whileHover={{ scale: 1.1 }}
-                                                className="w-10 h-10 rounded-xl bg-violet-50 flex items-center justify-center"
+                                                className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gray-100 flex items-center justify-center"
                                             >
-                                                <span className="text-lg">⬇️</span>
+                                                <span className="text-base sm:text-lg">⬇️</span>
                                             </motion.div>
                                         </div>
                                         <div className="flex-1 pt-0.5">
-                                            <p className="text-sm font-semibold text-slate-800">Downloaded {note.downloads || 0} times</p>
-                                            <p className="text-xs text-slate-400 mt-0.5">Total downloads</p>
+                                            <p className="text-xs sm:text-sm font-semibold text-gray-800">Downloaded {note.downloads || 0} times</p>
+                                            <p className="text-[10px] sm:text-xs text-gray-400 mt-0.5">Total downloads</p>
                                         </div>
                                     </div>
                                 </div>
@@ -837,21 +911,49 @@ const NoteViewer = () => {
                         </motion.div>
                     </div>
 
-                    {/* Footer note */}
+                    {/* Footer note - B&W Theme */}
                     <motion.div
                         variants={fadeInUp}
                         initial="hidden"
                         animate="visible"
                         custom={9}
-                        className="mt-8 text-center"
+                        className="mt-6 sm:mt-8 text-center"
                     >
-                        <p className="text-xs text-slate-400">
+                        <p className="text-[10px] sm:text-xs text-gray-400 break-all">
                             Note ID: {note._id} • File: {note.fileType || "Unknown"}
                         </p>
                     </motion.div>
 
                 </div>
             </div>
+
+            {/* Shimmer animation styles */}
+            <style jsx>{`
+                @keyframes shimmer {
+                    100% {
+                        transform: translateX(200%);
+                    }
+                }
+                .animate-shimmer {
+                    animation: shimmer 2s infinite;
+                }
+                @media (max-width: 375px) {
+                    .xs\\:inline {
+                        display: inline;
+                    }
+                    .xs\\:hidden {
+                        display: none;
+                    }
+                }
+                @media (min-width: 376px) {
+                    .xs\\:inline {
+                        display: inline;
+                    }
+                    .xs\\:hidden {
+                        display: none;
+                    }
+                }
+            `}</style>
         </div>
     );
 };

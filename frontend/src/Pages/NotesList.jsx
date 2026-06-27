@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import UserSidebar from "../Components/UserSidebar";
 import API from "../Services/api";
 
-// Animation variants
+// Enhanced animation variants
 const fadeInUp = {
     hidden: { opacity: 0, y: 20 },
     visible: (i = 0) => ({
@@ -46,7 +46,7 @@ const cardHover = {
     }
 };
 
-// Toast notification component with enhanced animations
+// Enhanced Toast component
 const Toast = ({ message, type, onClose }) => {
     useEffect(() => {
         const timer = setTimeout(onClose, 3000);
@@ -74,14 +74,14 @@ const Toast = ({ message, type, onClose }) => {
                 duration: 0.3,
                 ease: [0.22, 1, 0.36, 1]
             }}
-            className={`fixed top-4 right-4 z-50 px-6 py-4 rounded-2xl border shadow-lg max-w-sm ${bgColor[type] || bgColor.info}`}
+            className={`fixed top-4 right-4 z-50 px-4 sm:px-6 py-3 sm:py-4 rounded-2xl border shadow-lg max-w-[calc(100vw-2rem)] sm:max-w-sm mx-4 sm:mx-0 ${bgColor[type] || bgColor.info}`}
         >
             <div className="flex items-center gap-3">
-                <span className="text-lg">{iconMap[type] || "ℹ️"}</span>
-                <p className="text-sm font-medium">{message}</p>
+                <span className="text-lg flex-shrink-0">{iconMap[type] || "ℹ️"}</span>
+                <p className="text-xs sm:text-sm font-medium flex-1">{message}</p>
                 <button
                     onClick={onClose}
-                    className="ml-auto text-slate-400 hover:text-slate-600 transition-colors"
+                    className="ml-auto text-slate-400 hover:text-slate-600 transition-colors flex-shrink-0"
                 >
                     ✕
                 </button>
@@ -89,6 +89,42 @@ const Toast = ({ message, type, onClose }) => {
         </motion.div>
     );
 };
+
+// Mobile menu button component
+const MobileMenuButton = ({ showSidebar, setShowSidebar }) => (
+    <button
+        onClick={() => setShowSidebar(!showSidebar)}
+        className="lg:hidden fixed top-4 left-4 z-50 p-2.5 bg-white/80 backdrop-blur-xl rounded-xl shadow-lg border border-slate-200/50 hover:bg-white transition-all"
+        aria-label="Toggle sidebar"
+    >
+        <div className="w-5 h-4 flex flex-col justify-between">
+            <motion.span
+                className="block w-full h-0.5 bg-slate-700 rounded-full"
+                animate={{
+                    rotate: showSidebar ? 45 : 0,
+                    y: showSidebar ? 6 : 0
+                }}
+                transition={{ duration: 0.3 }}
+            />
+            <motion.span
+                className="block w-full h-0.5 bg-slate-700 rounded-full"
+                animate={{
+                    opacity: showSidebar ? 0 : 1,
+                    scale: showSidebar ? 0 : 1
+                }}
+                transition={{ duration: 0.3 }}
+            />
+            <motion.span
+                className="block w-full h-0.5 bg-slate-700 rounded-full"
+                animate={{
+                    rotate: showSidebar ? -45 : 0,
+                    y: showSidebar ? -6 : 0
+                }}
+                transition={{ duration: 0.3 }}
+            />
+        </div>
+    </button>
+);
 
 const NotesList = () => {
     const [notes, setNotes] = useState([]);
@@ -103,15 +139,16 @@ const NotesList = () => {
     const [toast, setToast] = useState(null);
     const [totalDownloads, setTotalDownloads] = useState(0);
     const [error, setError] = useState(null);
+    const [showMobileSidebar, setShowMobileSidebar] = useState(false);
     const notesPerPage = 9;
 
-    // Show toast
+    // Show toast - EXACT SAME
     const showToast = useCallback((message, type = "info") => {
         setToast({ message, type });
         setTimeout(() => setToast(null), 3000);
     }, []);
 
-    // Handle download
+    // Handle download - EXACT SAME
     const handleDownload = useCallback(async (noteId) => {
         if (downloading === noteId) return;
 
@@ -122,12 +159,10 @@ const NotesList = () => {
             if (response.data.success && response.data.fileUrl) {
                 let downloadUrl = response.data.fileUrl;
 
-                // Convert Cloudinary URL to force download
                 if (downloadUrl.includes('cloudinary.com')) {
                     downloadUrl = downloadUrl.replace('/upload/', '/upload/fl_attachment/');
                 }
 
-                // Create download link
                 const link = document.createElement('a');
                 link.href = downloadUrl;
                 link.download = response.data.title || 'download';
@@ -135,7 +170,6 @@ const NotesList = () => {
                 link.click();
                 document.body.removeChild(link);
 
-                // Update downloads count in state
                 setNotes(prevNotes =>
                     prevNotes.map(note =>
                         note._id === noteId
@@ -144,9 +178,7 @@ const NotesList = () => {
                     )
                 );
 
-                // Update total downloads
                 setTotalDownloads(prev => prev + 1);
-
                 showToast("Download started successfully", "success");
             } else {
                 showToast("Failed to download file", "error");
@@ -162,6 +194,7 @@ const NotesList = () => {
         }
     }, [downloading, showToast]);
 
+    // Fetch notes - EXACT SAME
     useEffect(() => {
         const fetchNotes = async () => {
             try {
@@ -191,7 +224,7 @@ const NotesList = () => {
         fetchNotes();
     }, [categoryId, showToast]);
 
-    // Filter and sort notes
+    // Filter and sort notes - EXACT SAME
     const filteredAndSortedNotes = useMemo(() => {
         let filtered = notes.filter((note) =>
             note.title?.toLowerCase().includes(search.toLowerCase()) ||
@@ -223,18 +256,18 @@ const NotesList = () => {
         return filtered;
     }, [notes, search, sortBy]);
 
-    // Calculate statistics
+    // Calculate statistics - EXACT SAME
     const totalNotes = filteredAndSortedNotes.length;
     const totalViews = filteredAndSortedNotes.reduce((sum, note) => sum + (note.views || 0), 0);
     const uniqueCategories = new Set(filteredAndSortedNotes.map(note => note.category?._id)).size;
 
-    // Update total downloads when notes change
+    // Update total downloads - EXACT SAME
     useEffect(() => {
         const sum = filteredAndSortedNotes.reduce((acc, note) => acc + (note.downloads || 0), 0);
         setTotalDownloads(sum);
     }, [filteredAndSortedNotes]);
 
-    // Pagination
+    // Pagination - EXACT SAME
     const totalPages = Math.ceil(totalNotes / notesPerPage);
     const indexOfLastNote = currentPage * notesPerPage;
     const indexOfFirstNote = indexOfLastNote - notesPerPage;
@@ -249,7 +282,7 @@ const NotesList = () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
-    // Get file icon with color
+    // Get file icon - EXACT SAME
     const getFileIcon = (filename) => {
         const ext = filename?.split(".").pop()?.toLowerCase();
         const icons = {
@@ -266,23 +299,23 @@ const NotesList = () => {
         return icons[ext] || icons.default;
     };
 
-    // Format file size
+    // Format file size - EXACT SAME
     const formatFileSize = (bytes) => {
         if (!bytes) return "0 MB";
         const mb = bytes / (1024 * 1024);
         return mb < 1 ? `${(bytes / 1024).toFixed(0)} KB` : `${mb.toFixed(2)} MB`;
     };
 
-    // Loading skeleton with shimmer
+    // Enhanced Loading Skeleton
     const LoadingSkeleton = () => (
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
             {[...Array(6)].map((_, i) => (
                 <motion.div
                     key={i}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.05 }}
-                    className="bg-white rounded-2xl border border-slate-200/80 p-5 overflow-hidden"
+                    className="bg-white/80 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-slate-200/80 p-4 sm:p-5 overflow-hidden"
                 >
                     <div className="relative">
                         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-slate-100/50 to-transparent -translate-x-full animate-shimmer"></div>
@@ -290,7 +323,7 @@ const NotesList = () => {
                             <div className="h-6 w-20 bg-slate-200 rounded-full"></div>
                             <div className="h-6 w-16 bg-slate-200 rounded-full"></div>
                         </div>
-                        <div className="h-7 bg-slate-200 rounded w-3/4 mb-3"></div>
+                        <div className="h-6 sm:h-7 bg-slate-200 rounded w-3/4 mb-3"></div>
                         <div className="h-4 bg-slate-200 rounded w-1/2 mb-4"></div>
                         <div className="h-4 bg-slate-200 rounded w-full mb-1"></div>
                         <div className="h-4 bg-slate-200 rounded w-2/3 mb-4"></div>
@@ -310,7 +343,7 @@ const NotesList = () => {
         </div>
     );
 
-    // Empty state
+    // Enhanced Empty State
     const EmptyState = () => (
         <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
@@ -320,7 +353,7 @@ const NotesList = () => {
                 stiffness: 300,
                 damping: 25
             }}
-            className="bg-white rounded-2xl border border-slate-200/80 shadow-[0_1px_4px_0_rgba(0,0,0,0.06)] p-16 text-center"
+            className="bg-white/80 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-slate-200/80 shadow-[0_1px_4px_0_rgba(0,0,0,0.06)] p-8 sm:p-16 text-center"
         >
             <motion.div
                 animate={{
@@ -332,12 +365,12 @@ const NotesList = () => {
                     repeat: Infinity,
                     ease: "easeInOut"
                 }}
-                className="w-20 h-20 rounded-2xl bg-slate-100 flex items-center justify-center mx-auto mb-4"
+                className="w-16 sm:w-20 h-16 sm:h-20 rounded-2xl bg-slate-100 flex items-center justify-center mx-auto mb-4"
             >
-                <span className="text-4xl">🔍</span>
+                <span className="text-3xl sm:text-4xl">🔍</span>
             </motion.div>
-            <h3 className="text-lg font-semibold text-slate-800">No Notes Found</h3>
-            <p className="text-sm text-slate-500 mt-2 max-w-md mx-auto">
+            <h3 className="text-base sm:text-lg font-semibold text-slate-800">No Notes Found</h3>
+            <p className="text-xs sm:text-sm text-slate-500 mt-2 max-w-md mx-auto">
                 {search ? "Try searching with a different keyword or browse all notes." : "There are no notes available in this category yet."}
             </p>
             {search && (
@@ -356,7 +389,7 @@ const NotesList = () => {
         </motion.div>
     );
 
-    // Pagination component
+    // Enhanced Pagination
     const Pagination = () => {
         if (totalPages <= 1) return null;
 
@@ -370,26 +403,26 @@ const NotesList = () => {
         }
 
         return (
-            <div className="flex items-center justify-center gap-2 mt-8">
+            <div className="flex flex-wrap items-center justify-center gap-1 sm:gap-2 mt-6 sm:mt-8">
                 <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
-                    className="px-3 py-2 rounded-xl border border-slate-200 text-sm font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="px-2 sm:px-3 py-1.5 sm:py-2 rounded-xl border border-slate-200 text-xs sm:text-sm font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                     Previous
                 </motion.button>
                 {pages.map((page, index) => (
                     page === '...' ? (
-                        <span key={`ellipsis-${index}`} className="px-2 text-slate-400">…</span>
+                        <span key={`ellipsis-${index}`} className="px-1 sm:px-2 text-slate-400">…</span>
                     ) : (
                         <motion.button
                             key={page}
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                             onClick={() => handlePageChange(page)}
-                            className={`w-10 h-10 rounded-xl text-sm font-medium transition-colors ${currentPage === page
+                            className={`w-8 h-8 sm:w-10 sm:h-10 rounded-xl text-xs sm:text-sm font-medium transition-colors ${currentPage === page
                                 ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md'
                                 : 'border border-slate-200 text-slate-600 hover:bg-slate-50'
                                 }`}
@@ -403,7 +436,7 @@ const NotesList = () => {
                     whileTap={{ scale: 0.95 }}
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
-                    className="px-3 py-2 rounded-xl border border-slate-200 text-sm font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="px-2 sm:px-3 py-1.5 sm:py-2 rounded-xl border border-slate-200 text-xs sm:text-sm font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                     Next
                 </motion.button>
@@ -412,8 +445,34 @@ const NotesList = () => {
     };
 
     return (
-        <div className="flex min-h-screen bg-gradient-to-br from-[#F7F8FA] to-[#EEF0F4]">
-            <UserSidebar />
+        <div className="flex min-h-screen bg-gradient-to-br from-[#F7F8FA] to-[#EEF0F4] relative">
+            {/* Mobile Sidebar Overlay */}
+            <AnimatePresence>
+                {showMobileSidebar && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={() => setShowMobileSidebar(false)}
+                        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
+                    />
+                )}
+            </AnimatePresence>
+
+            {/* Mobile Sidebar */}
+            <motion.div
+                initial={{ x: -300 }}
+                animate={{ x: showMobileSidebar ? 0 : -300 }}
+                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                className="fixed left-0 top-0 bottom-0 w-72 bg-white z-50 lg:hidden shadow-2xl"
+            >
+                <UserSidebar />
+            </motion.div>
+
+            {/* Desktop Sidebar */}
+            <div className="hidden lg:block">
+                <UserSidebar />
+            </div>
 
             {/* Toast */}
             <AnimatePresence>
@@ -426,39 +485,46 @@ const NotesList = () => {
                 )}
             </AnimatePresence>
 
-            <div className="flex-1 overflow-y-auto">
-                <div className="max-w-7xl mx-auto px-6 py-10">
+            {/* Main Content */}
+            <div className="flex-1 overflow-y-auto w-full">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10">
 
-                    {/* Header Section */}
+                    {/* Mobile Menu Button */}
+                    <MobileMenuButton
+                        showSidebar={showMobileSidebar}
+                        setShowSidebar={setShowMobileSidebar}
+                    />
+
+                    {/* Header Section - ENHANCED RESPONSIVE */}
                     <motion.div
                         variants={fadeInUp}
                         initial="hidden"
                         animate="visible"
                         custom={0}
-                        className="mb-8"
+                        className="mb-6 sm:mb-8 mt-12 lg:mt-0"
                     >
-                        <div className="flex items-center gap-2 mb-1">
+                        <div className="flex flex-wrap items-center gap-2 mb-2">
                             <motion.span
                                 initial={{ scale: 0.8, opacity: 0 }}
                                 animate={{ scale: 1, opacity: 1 }}
                                 transition={{ delay: 0.2 }}
-                                className="text-xs font-semibold uppercase tracking-widest text-indigo-500 bg-indigo-50 px-2.5 py-1 rounded-full"
+                                className="text-[10px] sm:text-xs font-semibold uppercase tracking-widest text-indigo-500 bg-indigo-50 px-2.5 py-1 rounded-full"
                             >
                                 {categoryName ? "Category" : "Explore"}
                             </motion.span>
                             {categoryName && (
-                                <span className="text-xs text-slate-400 ml-2">
+                                <span className="text-[10px] sm:text-xs text-slate-400 ml-1 sm:ml-2">
                                     {categoryName}
                                 </span>
                             )}
                         </div>
-                        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
                             <div>
                                 <motion.h1
                                     initial={{ x: -20, opacity: 0 }}
                                     animate={{ x: 0, opacity: 1 }}
                                     transition={{ delay: 0.3 }}
-                                    className="text-[2rem] font-bold tracking-tight text-slate-900 leading-tight"
+                                    className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-slate-900 leading-tight"
                                 >
                                     {categoryName ? `${categoryName} Notes` : "Notes Library"}
                                 </motion.h1>
@@ -466,7 +532,7 @@ const NotesList = () => {
                                     initial={{ x: -20, opacity: 0 }}
                                     animate={{ x: 0, opacity: 1 }}
                                     transition={{ delay: 0.4 }}
-                                    className="text-sm text-slate-500 mt-1.5 max-w-2xl"
+                                    className="text-xs sm:text-sm text-slate-500 mt-1.5 max-w-2xl"
                                 >
                                     {categoryName
                                         ? `Browse all notes in the ${categoryName} category.`
@@ -477,7 +543,7 @@ const NotesList = () => {
                                 initial={{ scale: 0.9, opacity: 0 }}
                                 animate={{ scale: 1, opacity: 1 }}
                                 transition={{ delay: 0.5 }}
-                                className="flex items-center gap-2 text-sm text-slate-500 bg-white px-4 py-2 rounded-xl border border-slate-200/80 shadow-sm"
+                                className="flex items-center gap-2 text-xs sm:text-sm text-slate-500 bg-white/80 backdrop-blur-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl border border-slate-200/80 shadow-sm flex-shrink-0"
                             >
                                 <span className="font-medium text-slate-700">{totalNotes}</span>
                                 <span>Notes</span>
@@ -494,11 +560,11 @@ const NotesList = () => {
                                 exit={{ opacity: 0, y: -10 }}
                                 className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-4 flex items-center gap-2"
                             >
-                                <span className="text-lg">⚠️</span>
-                                <span className="text-sm">{error}</span>
+                                <span className="text-lg flex-shrink-0">⚠️</span>
+                                <span className="text-xs sm:text-sm flex-1">{error}</span>
                                 <button
                                     onClick={() => setError(null)}
-                                    className="ml-auto text-red-500 hover:text-red-700 transition-colors"
+                                    className="text-red-500 hover:text-red-700 transition-colors p-1 flex-shrink-0"
                                 >
                                     ✕
                                 </button>
@@ -506,12 +572,12 @@ const NotesList = () => {
                         )}
                     </AnimatePresence>
 
-                    {/* Statistics Cards */}
+                    {/* Statistics Cards - ENHANCED RESPONSIVE */}
                     <motion.div
                         variants={containerVariants}
                         initial="hidden"
                         animate="visible"
-                        className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"
+                        className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8"
                     >
                         {[
                             { label: "Total Notes", value: totalNotes, icon: "📚", color: "indigo" },
@@ -529,11 +595,11 @@ const NotesList = () => {
                                     transition: { duration: 0.2 }
                                 }}
                                 whileTap={{ scale: 0.98 }}
-                                className="bg-white rounded-2xl border border-slate-200/80 shadow-[0_1px_4px_0_rgba(0,0,0,0.06)] p-5 hover:shadow-xl transition-all duration-300 cursor-pointer"
+                                className="bg-white/80 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-slate-200/80 shadow-[0_1px_4px_0_rgba(0,0,0,0.06)] p-4 sm:p-5 hover:shadow-xl transition-all duration-300 cursor-pointer"
                             >
                                 <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                                    <div className="min-w-0">
+                                        <p className="text-[10px] sm:text-xs font-semibold uppercase tracking-wide text-slate-500 truncate">
                                             {stat.label}
                                         </p>
                                         <motion.p
@@ -544,7 +610,7 @@ const NotesList = () => {
                                                 type: "spring",
                                                 stiffness: 300
                                             }}
-                                            className={`text-2xl font-bold mt-1 text-${stat.color}-600`}
+                                            className={`text-lg sm:text-2xl font-bold mt-1 text-${stat.color}-600`}
                                         >
                                             {loading ? "..." : stat.value}
                                         </motion.p>
@@ -552,22 +618,22 @@ const NotesList = () => {
                                     <motion.div
                                         whileHover={{ rotate: 360, scale: 1.1 }}
                                         transition={{ duration: 0.5 }}
-                                        className={`w-10 h-10 rounded-xl bg-${stat.color}-50 flex items-center justify-center`}
+                                        className={`w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-${stat.color}-50 flex items-center justify-center flex-shrink-0`}
                                     >
-                                        <span className="text-lg">{stat.icon}</span>
+                                        <span className="text-base sm:text-lg">{stat.icon}</span>
                                     </motion.div>
                                 </div>
                             </motion.div>
                         ))}
                     </motion.div>
 
-                    {/* Search and Sort Bar */}
+                    {/* Search and Sort Bar - ENHANCED RESPONSIVE */}
                     <motion.div
                         variants={fadeInUp}
                         initial="hidden"
                         animate="visible"
                         custom={2}
-                        className="bg-white rounded-2xl border border-slate-200/80 shadow-[0_1px_4px_0_rgba(0,0,0,0.06)] p-4 mb-8"
+                        className="bg-white/80 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-slate-200/80 shadow-[0_1px_4px_0_rgba(0,0,0,0.06)] p-3 sm:p-4 mb-6 sm:mb-8"
                     >
                         <div className="flex flex-col sm:flex-row gap-3">
                             <div className="flex-1 relative">
@@ -580,7 +646,7 @@ const NotesList = () => {
                                     placeholder="Search by title, subject, category or owner..."
                                     value={search}
                                     onChange={(e) => setSearch(e.target.value)}
-                                    className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                                    className="w-full pl-10 pr-8 py-2 sm:py-2.5 bg-slate-50/80 backdrop-blur-sm border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400 transition-all"
                                 />
                                 {search && (
                                     <motion.button
@@ -599,7 +665,7 @@ const NotesList = () => {
                                 <select
                                     value={sortBy}
                                     onChange={(e) => setSortBy(e.target.value)}
-                                    className="px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all cursor-pointer hover:bg-slate-100"
+                                    className="flex-1 sm:flex-none px-3 sm:px-4 py-2 sm:py-2.5 bg-slate-50/80 backdrop-blur-sm border border-slate-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400 transition-all cursor-pointer hover:bg-slate-100"
                                 >
                                     <option value="latest">🆕 Latest</option>
                                     <option value="oldest">📅 Oldest</option>
@@ -611,7 +677,7 @@ const NotesList = () => {
                         </div>
                     </motion.div>
 
-                    {/* Notes Grid */}
+                    {/* Notes Grid - ENHANCED RESPONSIVE */}
                     <AnimatePresence mode="wait">
                         {loading ? (
                             <LoadingSkeleton key="loading" />
@@ -623,7 +689,7 @@ const NotesList = () => {
                                 variants={containerVariants}
                                 initial="hidden"
                                 animate="visible"
-                                className="grid md:grid-cols-2 lg:grid-cols-3 gap-5"
+                                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5"
                             >
                                 {currentNotes.map((note, index) => {
                                     const fileIcon = getFileIcon(note.fileUrl);
@@ -635,58 +701,58 @@ const NotesList = () => {
                                             {...cardHover}
                                             whileHover="hover"
                                             whileTap="tap"
-                                            className="group bg-white rounded-2xl border border-slate-200/80 shadow-[0_1px_4px_0_rgba(0,0,0,0.06)] overflow-hidden hover:shadow-2xl hover:border-indigo-300 transition-all duration-300"
+                                            className="group bg-white/80 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-slate-200/80 shadow-[0_1px_4px_0_rgba(0,0,0,0.06)] overflow-hidden hover:shadow-2xl hover:border-indigo-300 transition-all duration-300"
                                         >
-                                            <div className="p-5">
+                                            <div className="p-4 sm:p-5">
                                                 {/* Header with category and file type */}
-                                                <div className="flex items-center justify-between mb-4">
+                                                <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
                                                     <motion.span
                                                         whileHover={{ scale: 1.05 }}
-                                                        className="inline-flex items-center gap-1.5 bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-full text-xs font-medium group-hover:bg-indigo-100 transition-colors"
+                                                        className="inline-flex items-center gap-1.5 bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-medium group-hover:bg-indigo-100 transition-colors"
                                                     >
                                                         <span>{note.category?.icon || "📂"}</span>
-                                                        <span>{note.category?.name || "General"}</span>
+                                                        <span className="truncate max-w-[80px] sm:max-w-none">{note.category?.name || "General"}</span>
                                                     </motion.span>
-                                                    <span className={`text-xs flex items-center gap-1 px-2 py-0.5 rounded-full ${fileIcon.color}`}>
-                                                        <span className="text-base">{fileIcon.icon}</span>
-                                                        <span>{note.fileType || "File"}</span>
+                                                    <span className={`text-[10px] sm:text-xs flex items-center gap-1 px-2 py-0.5 rounded-full ${fileIcon.color}`}>
+                                                        <span className="text-sm sm:text-base">{fileIcon.icon}</span>
+                                                        <span className="hidden sm:inline">{note.fileType || "File"}</span>
                                                     </span>
                                                 </div>
 
                                                 {/* Title */}
-                                                <h2 className="text-lg font-bold text-slate-900 mb-2 line-clamp-2 group-hover:text-indigo-600 transition-colors">
+                                                <h2 className="text-base sm:text-lg font-bold text-slate-900 mb-2 line-clamp-2 group-hover:text-indigo-600 transition-colors">
                                                     {note.title}
                                                 </h2>
 
                                                 {/* Subject */}
-                                                <p className="text-sm text-slate-500 mb-3 flex items-center gap-1.5">
+                                                <p className="text-xs sm:text-sm text-slate-500 mb-3 flex items-center gap-1.5">
                                                     <span>📖</span>
-                                                    <span>{note.subject}</span>
+                                                    <span className="truncate">{note.subject}</span>
                                                 </p>
 
                                                 {/* Description */}
                                                 {note.description && (
-                                                    <p className="text-sm text-slate-600 line-clamp-2 mb-4">
+                                                    <p className="text-xs sm:text-sm text-slate-600 line-clamp-2 mb-4">
                                                         {note.description}
                                                     </p>
                                                 )}
 
                                                 {/* Owner and Stats */}
                                                 <div className="border-t border-slate-100 pt-4">
-                                                    <div className="flex items-center justify-between text-xs text-slate-400 mb-3">
-                                                        <span className="flex items-center gap-1">
+                                                    <div className="flex flex-wrap items-center justify-between gap-2 text-[10px] sm:text-xs text-slate-400 mb-3">
+                                                        <span className="flex items-center gap-1 truncate max-w-[120px] sm:max-w-none">
                                                             <span>👤</span>
-                                                            <span>{note.owner?.name || "Unknown"}</span>
+                                                            <span className="truncate">{note.owner?.name || "Unknown"}</span>
                                                         </span>
                                                         {note.fileSize && (
-                                                            <span className="flex items-center gap-1">
+                                                            <span className="flex items-center gap-1 flex-shrink-0">
                                                                 <span>📦</span>
                                                                 <span>{formatFileSize(note.fileSize)}</span>
                                                             </span>
                                                         )}
                                                     </div>
 
-                                                    <div className="flex items-center gap-4 text-xs font-medium text-slate-500">
+                                                    <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-[10px] sm:text-xs font-medium text-slate-500">
                                                         <span className="flex items-center gap-1">
                                                             <span>👁️</span>
                                                             <span>{note.views || 0}</span>
@@ -695,7 +761,7 @@ const NotesList = () => {
                                                             <span>⬇️</span>
                                                             <span>{note.downloads || 0}</span>
                                                         </span>
-                                                        <span className="ml-auto text-slate-400">
+                                                        <span className="text-[10px] sm:text-xs text-slate-400 ml-auto">
                                                             {new Date(note.createdAt).toLocaleDateString('en-US', {
                                                                 month: 'short',
                                                                 day: 'numeric',
@@ -705,15 +771,15 @@ const NotesList = () => {
                                                     </div>
                                                 </div>
 
-                                                {/* Actions */}
-                                                <div className="flex gap-3 mt-4">
+                                                {/* Actions - ENHANCED RESPONSIVE */}
+                                                <div className="flex gap-2 sm:gap-3 mt-4">
                                                     <Link to={`/note/${note._id}`} className="flex-1">
                                                         <motion.button
                                                             whileHover={{ scale: 1.05 }}
                                                             whileTap={{ scale: 0.95 }}
-                                                            className="w-full bg-slate-900 hover:bg-slate-800 text-white py-2 rounded-xl text-xs font-semibold transition-colors flex items-center justify-center gap-1.5"
+                                                            className="w-full bg-slate-900 hover:bg-slate-800 text-white py-1.5 sm:py-2 rounded-xl text-[10px] sm:text-xs font-semibold transition-colors flex items-center justify-center gap-1.5"
                                                         >
-                                                            <svg className="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none">
+                                                            <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5" viewBox="0 0 16 16" fill="none">
                                                                 <path d="M8 3C4.5 3 2 7 2 7s2.5 4 6 4 6-4 6-4-2.5-4-6-4z" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
                                                                 <circle cx="8" cy="7" r="1.5" stroke="currentColor" strokeWidth="1.4" />
                                                             </svg>
@@ -726,19 +792,20 @@ const NotesList = () => {
                                                         whileTap={{ scale: 0.95 }}
                                                         onClick={() => handleDownload(note._id)}
                                                         disabled={downloading === note._id}
-                                                        className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-2 rounded-xl text-xs font-semibold transition-colors flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg"
+                                                        className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-1.5 sm:py-2 rounded-xl text-[10px] sm:text-xs font-semibold transition-colors flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg"
                                                     >
                                                         {downloading === note._id ? (
                                                             <>
-                                                                <svg className="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none">
+                                                                <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5 animate-spin" viewBox="0 0 24 24" fill="none">
                                                                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
                                                                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l3-3-3-3V4a10 10 0 100 10h-2a8 8 0 01-8-8z" />
                                                                 </svg>
-                                                                Downloading...
+                                                                <span className="hidden xs:inline">Downloading...</span>
+                                                                <span className="xs:hidden">DL...</span>
                                                             </>
                                                         ) : (
                                                             <>
-                                                                <svg className="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none">
+                                                                <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5" viewBox="0 0 16 16" fill="none">
                                                                     <path d="M8 10V1M5 4l3-3 3 3M2 12v1.5A1.5 1.5 0 003.5 15h9a1.5 1.5 0 001.5-1.5V12" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
                                                                 </svg>
                                                                 Download
@@ -754,7 +821,7 @@ const NotesList = () => {
                         )}
                     </AnimatePresence>
 
-                    {/* Results count and Pagination */}
+                    {/* Results count and Pagination - ENHANCED RESPONSIVE */}
                     {!loading && currentNotes.length > 0 && (
                         <motion.div
                             initial={{ opacity: 0 }}
@@ -762,7 +829,7 @@ const NotesList = () => {
                             transition={{ delay: 0.5 }}
                         >
                             <div className="mt-6 text-center">
-                                <p className="text-xs text-slate-400">
+                                <p className="text-[10px] sm:text-xs text-slate-400">
                                     Showing {indexOfFirstNote + 1} - {Math.min(indexOfLastNote, totalNotes)} of {totalNotes} notes
                                     {search && ` matching "${search}"`}
                                 </p>
@@ -771,20 +838,32 @@ const NotesList = () => {
                         </motion.div>
                     )}
 
-                    {/* Footer */}
+                    {/* Footer - ENHANCED RESPONSIVE */}
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.6 }}
-                        className="mt-10 text-center"
+                        className="mt-8 sm:mt-10 text-center"
                     >
-                        <p className="text-xs text-slate-400">
+                        <p className="text-[10px] sm:text-xs text-slate-400">
                             NotesSaver • Notes Library • {new Date().getFullYear()}
                         </p>
                     </motion.div>
 
                 </div>
             </div>
+
+            {/* Shimmer animation styles */}
+            <style jsx>{`
+                @keyframes shimmer {
+                    100% {
+                        transform: translateX(200%);
+                    }
+                }
+                .animate-shimmer {
+                    animation: shimmer 2s infinite;
+                }
+            `}</style>
         </div>
     );
 };
